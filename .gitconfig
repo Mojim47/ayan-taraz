@@ -1,0 +1,36 @@
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+[user]
+    name = Morig37
+    email = 197120931+Morig37@users.noreply.github.com
+[safe]
+    directory = C:/Users/Moji/my-ecommerce-store
+    directory = *
+    directory = *
+    directory = *
+    directory = *
+    directory = *
+[url "https://"]
+    insteadOf = git://
+[core]
+    autocrlf = false
+    editor = code --wait
+    askpass = git-askpass
+    sshCommand = ssh
+[http]
+    postBuffer = 157286400
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+[push]
+    default = simple
+[pull]
+    rebase = false
+[alias]
+    st = status
+    co = checkout
+    ci = commit
+    br = branch
+    lg = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all

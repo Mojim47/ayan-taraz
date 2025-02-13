@@ -6,6 +6,8 @@ import { Provider } from 'react-redux';
 import authReducer from './store/slices/authSlice';
 import uiReducer from './store/slices/uiSlice';
 import { vi } from 'vitest';
+import { cleanup } from '@testing-library/react';
+import { afterEach } from 'vitest';
 
 declare global {
   const describe: typeof vi.describe;
@@ -26,6 +28,10 @@ window.it = vi.it;
 window.expect = vi.expect;
 window.beforeEach = vi.beforeEach;
 window.afterEach = vi.afterEach;
+
+afterEach(() => {
+  cleanup();
+});
 
 interface CustomMatchers<R = void> {
   toBeInTheDocument(): R;
