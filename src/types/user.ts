@@ -6,8 +6,8 @@ export interface User {
   mobile?: string;
   avatar?: string;
   role: UserRole;
-  status: UserStatus;
-  lastLogin?: Date;
+  status: 'active' | 'inactive';
+  lastLogin?: string;
 }
 
 export type UserRole = 'admin' | 'user' | 'editor';

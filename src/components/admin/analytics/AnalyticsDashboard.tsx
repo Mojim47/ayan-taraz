@@ -1,4 +1,3 @@
-// src/components/admin/analytics/AnalyticsDashboard.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -11,6 +10,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  SelectChangeEvent,
 } from '@mui/material';
 import {
   LineChart,
@@ -40,63 +40,71 @@ interface AnalyticsDashboardProps {
   onTimeRangeChange: (range: TimeRange) => void;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+interface StatCardProps {
+  icon: React.ReactNode;
+  title: string;
+  value: string | number;
+  subtitle: string;
+  color: string;
+}
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'] as const;
+const TIME_RANGES = {
+  '7d': 7,
+  '30d': 30,
+  '90d': 90,
+} as const;
+
+const StatCard: React.FC<StatCardProps> = ({ icon, title, value, subtitle, color }) => (
+  <Card>
+    <CardContent>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+        <Box
+          sx={{
+            p: 1,
+            borderRadius: 1,
+            bgcolor: `${color}20`,
+            color,
+            mr: 2,
+          }}
+        >
+          {icon}
+        </Box>
+        <Typography color="textSecondary">{title}</Typography>
+      </Box>
+      <Typography variant="h4" sx={{ mb: 1 }}>
+        {value}
+      </Typography>
+      <Typography variant="body2" color="textSecondary">
+        {subtitle}
+      </Typography>
+    </CardContent>
+  </Card>
+);
 
 export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   data,
   onTimeRangeChange,
 }) => {
-  const [timeRange, setTimeRange] = useState('7d');
+  const [timeRange, setTimeRange] = useState<keyof typeof TIME_RANGES>('7d');
 
-  const handleTimeRangeChange = (event: any) => {
-    const range = event.target.value;
+  const handleTimeRangeChange = (event: SelectChangeEvent) => {
+    const range = event.target.value as keyof typeof TIME_RANGES;
     setTimeRange(range);
+    
     const end = new Date();
     const start = new Date();
-
-    switch (range) {
-      case '7d':
-        start.setDate(start.getDate() - 7);
-        break;
-      case '30d':
-        start.setDate(start.getDate() - 30);
-        break;
-      case '90d':
-        start.setDate(start.getDate() - 90);
-        break;
-      default:
-        break;
-    }
-
+    start.setDate(start.getDate() - TIME_RANGES[range]);
+    
     onTimeRangeChange({ start, end });
   };
 
-  const StatCard = ({ icon, title, value, subtitle, color }: any) => (
-    <Card>
-      <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Box
-            sx={{
-              p: 1,
-              borderRadius: 1,
-              bgcolor: `${color}20`,
-              color: color,
-              mr: 2,
-            }}
-          >
-            {icon}
-          </Box>
-          <Typography color="textSecondary">{title}</Typography>
-        </Box>
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          {value}
-        </Typography>
-        <Typography variant="body2" color="textSecondary">
-          {subtitle}
-        </Typography>
-      </CardContent>
-    </Card>
-  );
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('fa-IR', {
+      style: 'currency',
+      currency: 'IRR',
+    }).format(amount);
+  };
 
   return (
     <Box>
@@ -117,7 +125,6 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       </Box>
 
       <Grid container spacing={3}>
-        {/* کارت‌های آماری */}
         <Grid item xs={12} md={3}>
           <StatCard
             icon={<People />}
@@ -140,11 +147,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           <StatCard
             icon={<TrendingUp />}
             title="درآمد"
-            value={new Intl.NumberFormat('fa-IR', {
-              style: 'currency',
-              currency: 'IRR',
-            }).format(data.revenue.total)}
-            subtitle={`${data.revenue.thisMonth} ریال در این ماه`}
+            value={formatCurrency(data.revenue.total)}
+            subtitle={`${formatCurrency(data.revenue.thisMonth)} در این ماه`}
             color="#FF9800"
           />
         </Grid>
@@ -158,79 +162,79 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           />
         </Grid>
 
-        {/* نمودار بازدید */}
         <Grid item xs={12} md={8}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom>
-              روند بازدید
-            </Typography>
-            <ResponsiveContainer width="100%" height="90%">
-              <LineChart data={data.pageViews.mostVisited}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="path" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="views"
-                  stroke="#2196F3"
-                  name="تعداد بازدید"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </Paper>
+          <ChartContainer title="روند بازدید">
+            <LineChart data={data.pageViews.mostVisited}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="path" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="views"
+                stroke="#2196F3"
+                name="تعداد بازدید"
+              />
+            </LineChart>
+          </ChartContainer>
         </Grid>
 
-        {/* نمودار درآمد */}
         <Grid item xs={12} md={4}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom>
-              درآمد به تفکیک خدمات
-            </Typography>
-            <ResponsiveContainer width="100%" height="90%">
-              <PieChart>
-                <Pie
-                  data={data.revenue.byService}
-                  dataKey="amount"
-                  nameKey="service"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label
-                >
-                  {data.revenue.byService.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </Paper>
+          <ChartContainer title="درآمد به تفکیک خدمات">
+            <PieChart>
+              <Pie
+                data={data.revenue.byService}
+                dataKey="amount"
+                nameKey="service"
+                cx="50%"
+                cy="50%"
+                outerRadius={80}
+                label
+              >
+                {data.revenue.byService.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ChartContainer>
         </Grid>
 
-        {/* نمودار کاربران */}
         <Grid item xs={12}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom>
-              پراکندگی کاربران
-            </Typography>
-            <ResponsiveContainer width="100%" height="90%">
-              <BarChart data={data.users.byLocation}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="city" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#2196F3" name="تعداد کاربران" />
-              </BarChart>
-            </ResponsiveContainer>
-          </Paper>
+          <ChartContainer title="پراکندگی کاربران">
+            <BarChart data={data.users.byLocation}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="city" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="count" fill="#2196F3" name="تعداد کاربران" />
+            </BarChart>
+          </ChartContainer>
         </Grid>
       </Grid>
     </Box>
   );
 };
+
+interface ChartContainerProps {
+  title: string;
+  children: React.ReactNode;
+}
+
+const ChartContainer: React.FC<ChartContainerProps> = ({ title, children }) => (
+  <Paper sx={{ p: 3, height: 400 }}>
+    <Typography variant="h6" gutterBottom>
+      {title}
+    </Typography>
+    <ResponsiveContainer width="100%" height="90%">
+      {children}
+    </ResponsiveContainer>
+  </Paper>
+);
+
+export default AnalyticsDashboard;

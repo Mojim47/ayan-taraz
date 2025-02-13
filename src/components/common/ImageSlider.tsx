@@ -1,17 +1,10 @@
-// src/components/common/ImageSlider.tsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { Box, IconButton, Typography, useTheme } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
-
-interface SlideImage {
-  url: string;
-  title: string;
-  description: string;
-}
+import { styled, useTheme } from '@mui/material/styles';
 
 interface ImageSliderProps {
-  images: SlideImage[];
+  images: string[];
   autoPlayInterval?: number;
 }
 
@@ -24,7 +17,7 @@ const SliderContainer = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[5],
 }));
 
-const SlideImage = styled('img')({
+const SlideImageStyled = styled('img')({
   width: '100%',
   height: '100%',
   objectFit: 'cover',
@@ -105,29 +98,19 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
 
   return (
     <SliderContainer>
-      <SlideImage
-        src={images[currentIndex].url}
-        alt={images[currentIndex].title}
-        loading="lazy"
+      <SlideImageStyled
+        src={images[currentIndex]}
+        alt={`Slide ${currentIndex + 1}`}
       />
-
       <SlideOverlay>
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          {images[currentIndex].title}
-        </Typography>
-        <Typography variant="body1">
-          {images[currentIndex].description}
-        </Typography>
+        <h2>{`Slide ${currentIndex + 1}`}</h2>
       </SlideOverlay>
-
-      <NavigationButton onClick={previousSlide} sx={{ left: theme.spacing(2) }}>
-        <ChevronRight />
-      </NavigationButton>
-
-      <NavigationButton onClick={nextSlide} sx={{ right: theme.spacing(2) }}>
+      <NavigationButton onClick={previousSlide} sx={{ left: 8 }}>
         <ChevronLeft />
       </NavigationButton>
-
+      <NavigationButton onClick={nextSlide} sx={{ right: 8 }}>
+        <ChevronRight />
+      </NavigationButton>
       <SlideIndicators>
         {images.map((_, index) => (
           <SlideIndicator
@@ -140,3 +123,5 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
     </SliderContainer>
   );
 };
+
+export default ImageSlider;

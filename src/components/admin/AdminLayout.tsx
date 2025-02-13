@@ -1,4 +1,3 @@
-// src/components/admin/AdminLayout.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -33,7 +32,13 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const DRAWER_WIDTH = 240;
 
-const menuItems = [
+interface MenuItem {
+  title: string;
+  icon: React.ReactElement;
+  path: string;
+}
+
+const menuItems: MenuItem[] = [
   { title: 'داشبورد', icon: <Dashboard />, path: '/admin' },
   { title: 'مقالات', icon: <Article />, path: '/admin/articles' },
   { title: 'آموزش‌ها', icon: <School />, path: '/admin/tutorials' },
@@ -48,35 +53,44 @@ interface AdminLayoutProps {
 }
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
-  const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleProfileClick = () => {
+    handleMenuClose();
+    navigate('/admin/profile');
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    navigate('/logout');
   };
 
   const drawer = (
     <Box>
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
-        <img src="/logo.png" alt="آیان تراز" style={{ width: 40 }} />
+        <img
+          src="/logo.png"
+          alt="آیان تراز"
+          style={{ width: 40, height: 'auto' }}
+        />
         <Typography variant="h6" color="primary">
           پنل مدیریت
         </Typography>
       </Box>
       <Divider />
       <List>
-        {menuItems.map(item => (
+        {menuItems.map((item) => (
           <ListItem
             button
             key={item.path}
@@ -90,6 +104,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 '& .MuiListItemIcon-root': {
                   color: 'primary.contrastText',
                 },
+                '&:hover': {
+                  bgcolor: 'primary.dark',
+                },
               },
             }}
           >
@@ -102,7 +119,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <AppBar
         position="fixed"
         sx={{
@@ -120,21 +137,26 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <MenuIcon />
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
-          <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
+          <IconButton
+            onClick={handleMenuOpen}
+            sx={{ p: 0, '&:hover': { opacity: 0.8 } }}
+          >
             <Avatar alt="مدیر سیستم" src="/admin-avatar.jpg" />
           </IconButton>
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <MenuItem onClick={() => navigate('/admin/profile')}>
+            <MenuItem onClick={handleProfileClick}>
               <ListItemIcon>
                 <Person fontSize="small" />
               </ListItemIcon>
               <Typography>پروفایل</Typography>
             </MenuItem>
-            <MenuItem onClick={() => navigate('/logout')}>
+            <MenuItem onClick={handleLogout}>
               <ListItemIcon>
                 <ExitToApp fontSize="small" />
               </ListItemIcon>
@@ -185,6 +207,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           p: 3,
           width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
           mt: 8,
+          bgcolor: 'background.default',
         }}
       >
         {children}
@@ -192,3 +215,5 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     </Box>
   );
 };
+
+export default AdminLayout;

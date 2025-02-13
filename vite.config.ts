@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import mdx from '@mdx-js/rollup';
 
@@ -10,14 +10,14 @@ export default defineConfig({
       jsxImportSource: '@emotion/react',
       jsxRuntime: 'automatic',
       babel: {
-        presets: ['@babel/preset-react', '@babel/preset-env'],
         plugins: ['@babel/plugin-transform-runtime'],
-        babelrc: true,
-        configFile: true,
-        parserOpts: {
-          plugins: ['decorators-legacy'],
-        },
+        babelrc: false,
+        configFile: false
       },
     }),
   ],
-});
+  test: {
+    environment: 'node',
+    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']
+  }
+})

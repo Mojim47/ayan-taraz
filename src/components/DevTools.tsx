@@ -7,11 +7,12 @@ export const DevTools: React.FC = () => {
   const ui = useAppSelector(state => state.ui);
 
   const clearLocalStorage = () => {
-    localStorage.clear();
+    window.localStorage.clear();
     window.location.reload();
   };
+  const isDevelopment = import.meta.env.DEV;
 
-  return process.env.REACT_APP_ENV === 'development' ? (
+  return isDevelopment ? (
     <Paper
       sx={{ p: 2, m: 2, position: 'fixed', bottom: 0, right: 0, zIndex: 9999 }}
     >

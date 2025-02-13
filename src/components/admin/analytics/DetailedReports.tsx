@@ -1,5 +1,4 @@
-// src/components/admin/analytics/DetailedReports.tsx
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Table,
@@ -20,15 +19,76 @@ interface DetailedReportsProps {
   data: AnalyticsData;
 }
 
-export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
-  const [reportType, setReportType] = useState<
-    'users' | 'revenue' | 'consultations'
-  >('users');
+type ReportType = 'users' | 'revenue' | 'consultations';
 
-  const generateReport = () => {
-    // پیاده‌سازی خروجی گزارش به صورت CSV یا EXCEL
-    console.log('Generating report for:', reportType);
+interface TableConfig {
+  headers: string[];
+  getRowData: (item: any) => React.ReactNode[];
+}
+
+const REPORT_TYPES: Record<ReportType, string> = {
+  users: 'کاربران',
+  revenue: 'درآمد',
+  consultations: 'مشاوره‌ها',
+} as const;
+
+const TABLE_CONFIGS: Record<ReportType, TableConfig> = {
+  users: {
+    headers: ['نام کاربر', 'تاریخ عضویت', 'تعداد مشاوره', 'مجموع پرداخت'],
+    getRowData: (user) => [
+      user.name,
+      new Date(user.joinDate).toLocaleDateString('fa-IR'),
+      user.consultationCount,
+      new Intl.NumberFormat('fa-IR', {
+        style: 'currency',
+        currency: 'IRR',
+      }).format(user.totalPayment),
+    ],
+  },
+  revenue: {
+    headers: ['تاریخ', 'نوع خدمت', 'تعداد', 'مبلغ کل'],
+    getRowData: (revenue) => [
+      new Date(revenue.date).toLocaleDateString('fa-IR'),
+      revenue.serviceType,
+      revenue.count,
+      new Intl.NumberFormat('fa-IR', {
+        style: 'currency',
+        currency: 'IRR',
+      }).format(revenue.totalAmount),
+    ],
+  },
+  consultations: {
+    headers: ['تاریخ', 'مشاور', 'کاربر', 'وضعیت', 'امتیاز'],
+    getRowData: (consultation) => [
+      new Date(consultation.date).toLocaleDateString('fa-IR'),
+      consultation.advisorName,
+      consultation.userName,
+      consultation.status,
+      consultation.rating,
+    ],
+  },
+};
+
+export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
+  const [reportType, setReportType] = useState<ReportType>('users');
+
+  const handleGenerateReport = async () => {
+    try {
+      // در اینجا می‌توانید لاجیک دانلود گزارش را پیاده‌سازی کنید
+      console.info(`Generating ${reportType} report...`);
+      // مثال: await generateReportPDF(data[reportType]);
+    } catch (error) {
+      console.error('Error generating report:', error);
+      // می‌توانید از یک کامپوننت نوتیفیکیشن برای نمایش خطا استفاده کنید
+    }
   };
+
+  const currentConfig = useMemo(() => TABLE_CONFIGS[reportType], [reportType]);
+  
+  const getReportData = useMemo(() => {
+    // این تابع باید بر اساس نوع گزارش، داده‌های مناسب را از data استخراج کند
+    return data[reportType] || [];
+  }, [data, reportType]);
 
   return (
     <Paper sx={{ p: 3 }}>
@@ -36,70 +96,52 @@ export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
         <Typography variant="h6" gutterBottom>
           گزارش‌های تفصیلی
         </Typography>
-        <ButtonGroup variant="outlined" sx={{ mb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <ButtonGroup variant="outlined">
+            {Object.entries(REPORT_TYPES).map(([type, label]) => (
+              <Button
+                key={type}
+                onClick={() => setReportType(type as ReportType)}
+                variant={reportType === type ? 'contained' : 'outlined'}
+                sx={{ minWidth: 100 }}
+              >
+                {label}
+              </Button>
+            ))}
+          </ButtonGroup>
           <Button
-            onClick={() => setReportType('users')}
-            variant={reportType === 'users' ? 'contained' : 'outlined'}
+            startIcon={<Download />}
+            onClick={handleGenerateReport}
+            variant="contained"
+            color="primary"
           >
-            کاربران
+            دریافت گزارش
           </Button>
-          <Button
-            onClick={() => setReportType('revenue')}
-            variant={reportType === 'revenue' ? 'contained' : 'outlined'}
-          >
-            درآمد
-          </Button>
-          <Button
-            onClick={() => setReportType('consultations')}
-            variant={reportType === 'consultations' ? 'contained' : 'outlined'}
-          >
-            مشاوره‌ها
-          </Button>
-        </ButtonGroup>
-        <Button
-          startIcon={<Download />}
-          onClick={generateReport}
-          variant="contained"
-          sx={{ float: 'right' }}
-        >
-          دریافت گزارش
-        </Button>
+        </Box>
       </Box>
 
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              {reportType === 'users' && (
-                <>
-                  <TableCell>نام کاربر</TableCell>
-                  <TableCell>تاریخ عضویت</TableCell>
-                  <TableCell>تعداد مشاوره</TableCell>
-                  <TableCell>مجموع پرداخت</TableCell>
-                </>
-              )}
-              {reportType === 'revenue' && (
-                <>
-                  <TableCell>تاریخ</TableCell>
-                  <TableCell>نوع خدمت</TableCell>
-                  <TableCell>تعداد</TableCell>
-                  <TableCell>مبلغ کل</TableCell>
-                </>
-              )}
-              {reportType === 'consultations' && (
-                <>
-                  <TableCell>تاریخ</TableCell>
-                  <TableCell>مشاور</TableCell>
-                  <TableCell>کاربر</TableCell>
-                  <TableCell>وضعیت</TableCell>
-                  <TableCell>امتیاز</TableCell>
-                </>
-              )}
+              {currentConfig.headers.map((header) => (
+                <TableCell key={header}>{header}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
-          <TableBody>{/* نمایش داده‌های متناسب با نوع گزارش */}</TableBody>
+          <TableBody>
+            {getReportData.map((item, index) => (
+              <TableRow key={index}>
+                {currentConfig.getRowData(item).map((cell, cellIndex) => (
+                  <TableCell key={cellIndex}>{cell}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
       </TableContainer>
     </Paper>
   );
 };
+
+export default DetailedReports;

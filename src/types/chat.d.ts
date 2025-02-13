@@ -26,6 +26,7 @@ export interface RefreshTokenResponse {
   token: string;
   refreshToken: string;
 }
+
 export interface User {
   id: string;
   username: string;
@@ -45,15 +46,12 @@ export interface AuthState {
   error: string | null;
 }
 
-export interface LoginCredentials {
+export interface RegisterData {
+  username: string;
   email: string;
   password: string;
-  remember?: boolean;
-}
-
-export interface RegisterData extends LoginCredentials {
-  username: string;
   confirmPassword: string;
+  remember?: boolean;
 }
 
 export interface AuthResponse {
@@ -61,10 +59,11 @@ export interface AuthResponse {
   token: string;
 }
 
-export type AuthError = {
+export interface AuthError {
   message: string;
   code?: string;
-};
+}
+
 declare namespace Chat {
   interface Message {
     id: string;

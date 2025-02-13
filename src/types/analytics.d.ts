@@ -40,3 +40,47 @@ export interface TimeRange {
   start: Date;
   end: Date;
 }
+
+export interface StatCardProps {
+  icon: React.ReactNode;
+  title: string;
+  value: string | number;
+  subtitle: string;
+  color: string;
+}
+
+export interface ChipColors {
+  pending: 'default';
+  running: 'info';
+  completed: 'success';
+  failed: 'error';
+}
+declare namespace Analytics {
+  interface PageView {
+    path: string;
+    title: string;
+    timestamp: number;
+  }
+
+  interface UserEvent {
+    type: 'click' | 'scroll' | 'input';
+    element: string;
+    timestamp: number;
+  }
+
+  interface PerformanceMetric {
+    name: string;
+    value: number;
+    timestamp: number;
+  }
+
+  interface ErrorEvent {
+    message: string;
+    stack?: string;
+    timestamp: number;
+  }
+
+  type EventType = PageView | UserEvent | PerformanceMetric | ErrorEvent;
+}
+
+export = Analytics;
