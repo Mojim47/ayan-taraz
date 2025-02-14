@@ -50,7 +50,7 @@ interface BackupManagerProps {
   onUpdateConfig: (config: BackupConfig) => Promise<void>;
 }
 
-const statusColors: Record<BackupStatus, any> = {
+const statusColors: Record<BackupStatus,any> = {
   pending: 'default',
   running: 'info',
   completed: 'success',

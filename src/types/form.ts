@@ -1,7 +1,7 @@
 export interface ValidationRule {
   type: 'required' | 'minLength' | 'email' | 'min' | 'max' | 'pattern';
   message: string;
-  params?: any;
+  params?: number | RegExp | string;
 }
 
 export interface Option {
@@ -12,19 +12,11 @@ export interface Option {
 export interface FormField {
   name: string;
   label: string;
-  type:
-    | 'text'
-    | 'number'
-    | 'email'
-    | 'password'
-    | 'select'
-    | 'date'
-    | 'file'
-    | 'textarea';
+  type: 'text' | 'number' | 'email' | 'password' | 'select' | 'date' | 'file' | 'textarea';
   required?: boolean;
   validation?: ValidationRule[];
   options?: Option[];
-  defaultValue?: any;
+  defaultValue?: string | number | Date | null;
   placeholder?: string;
   disabled?: boolean;
   multiple?: boolean;
@@ -42,11 +34,4 @@ export interface FormConfig {
   columns?: 1 | 2 | 3;
 }
 
-export interface FormSubmission {
-  id: string;
-  formId: string;
-  data: any;
-  submittedBy: string;
-  submittedAt: Date;
-  status: 'pending' | 'approved' | 'rejected';
-}
+export type FormValues = Record<string, unknown>;

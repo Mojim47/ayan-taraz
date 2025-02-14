@@ -1,4 +1,15 @@
-// src/types/state.ts
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface Notification {
+  id: string;
+  message: string;
+  read: boolean;
+}
+
 export interface AppState {
   auth: AuthState;
   ui: UIState;
@@ -29,7 +40,7 @@ export interface UIState {
 
 export interface DataState {
   entities: {
-    [key: string]: any[];
+    [key: string]: Record<string, unknown>[];
   };
   metadata: {
     [key: string]: {
@@ -41,7 +52,7 @@ export interface DataState {
 
 export interface CacheState {
   [key: string]: {
-    data: any;
+    data: unknown;
     expiresAt: number;
   };
 }

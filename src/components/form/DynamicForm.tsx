@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -10,76 +9,86 @@ import {
   InputLabel,
   FormHelperText,
   Button,
+  Grid,
 } from '@mui/material';
-import { FormConfig, FormField } from '../../types/form';
+import { FormConfig, FormField, FormValues } from '../../types/form';
 
 interface DynamicFormProps {
   config: FormConfig;
-  onSubmit: (data: any) => void;
-  initialValues?: Record<string, any>;
+  onSubmit: (data: FormValues) => void | Promise<void>;
+  initialValues?: Partial<FormValues>;
 }
 
-export const DynamicForm: React.FC<DynamicFormProps> = ({
-  config,
-  onSubmit,
-  initialValues,
-}) => {
-  const schema = yup.object().shape(
-    config.fields.reduce((acc, field) => {
-      let validator: yup.AnySchema = yup.mixed();
+const createValidationSchema = (fields: FormField[]) => {
+  const schemaFields = fields.reduce<Record<string, yup.AnySchema>>((acc, field) => {
+    let validator: yup.AnySchema = yup.mixed();
 
-      // اعمال قواعد اعتبارسنجی
-      field.validation?.forEach(rule => {
-        switch (rule.type) {
-          case 'required':
-            validator = yup.string().required(rule.message);
-            break;
-          case 'email':
-            validator = yup.string().email(rule.message);
-            break;
-          case 'min':
-            validator = yup.number().min(Number(rule.params), rule.message);
-            break;
-          case 'max':
-            validator = yup.number().max(Number(rule.params), rule.message);
-            break;
-          case 'minLength':
-            validator = yup.string().min(Number(rule.params), rule.message);
-            break;
-          case 'maxLength':
-            validator = yup.string().max(Number(rule.params), rule.message);
-            break;
-          case 'pattern':
-            if (rule.params instanceof RegExp) {
-              validator = yup.string().matches(rule.params, rule.message);
-            }
-            break;
-        }
-      });
+    if (field.required) {
+      validator = validator.required(field.label + ' الزامی است');
+    }
 
-      return { ...acc, [field.name]: validator };
-    }, {})
-  );
+    field.validation?.forEach(rule => {
+      switch (rule.type) {
+        case 'required':
+          validator = yup.string().required(rule.message);
+          break;
+        case 'email':
+          validator = yup.string().email(rule.message);
+          break;
+        case 'min':
+          validator = yup.number().min(Number(rule.params), rule.message);
+          break;
+        case 'max':
+          validator = yup.number().max(Number(rule.params), rule.message);
+          break;
+        case 'minLength':
+          validator = yup.string().min(Number(rule.params), rule.message);
+          break;
+        case 'pattern':
+          if (typeof rule.params === 'string') {
+            validator = yup.string().matches(new RegExp(rule.params), rule.message);
+          }
+          break;
+      }
+    });
 
-  const { control, handleSubmit } = useForm({
+    return { ...acc, [field.name]: validator };
+  }, {});
+
+  return yup.object().shape(schemaFields);
+};
+
+export function DynamicForm({ config, onSubmit, initialValues }: DynamicFormProps) {
+  const schema = createValidationSchema(config.fields);
+
+  const { control, handleSubmit, reset } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
   });
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {config.fields.map(field => (
+  const renderField = (field: FormField) => {
+    const isFullWidth = !config.columns || config.columns === 1;
+    const gridWidth = 12 / (config.columns || 1);
+
+    return (
+      <Grid item xs={12} md={isFullWidth ? 12 : gridWidth} key={field.name}>
         <Controller
-          key={field.name}
           name={field.name}
           control={control}
+          defaultValue={field.defaultValue ?? ''}
           render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <FormControl fullWidth margin="normal" error={!!error}>
+            <FormControl 
+              fullWidth 
+              margin="normal" 
+              error={!!error}
+              disabled={field.disabled}
+            >
               {field.type === 'select' ? (
                 <>
-                  <InputLabel>{field.label}</InputLabel>
+                  <InputLabel id={`label-${field.name}`}>{field.label}</InputLabel>
                   <Select
-                    value={value}
+                    labelId={`label-${field.name}`}
+                    value={value ?? ''}
                     onChange={onChange}
                     label={field.label}
                     multiple={field.multiple}
@@ -92,29 +101,73 @@ export const DynamicForm: React.FC<DynamicFormProps> = ({
                   </Select>
                   {error && <FormHelperText>{error.message}</FormHelperText>}
                 </>
+              ) : field.type === 'textarea' ? (
+                <TextField
+                  multiline
+                  rows={field.rows || 4}
+                  label={field.label}
+                  value={value ?? ''}
+                  onChange={onChange}
+                  error={!!error}
+                  helperText={error?.message}
+                  placeholder={field.placeholder}
+                />
               ) : (
                 <TextField
                   label={field.label}
                   type={field.type}
-                  value={value}
+                  value={value ?? ''}
                   onChange={onChange}
                   error={!!error}
                   helperText={error?.message}
+                  placeholder={field.placeholder}
                 />
               )}
             </FormControl>
           )}
         />
-      ))}
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ mt: 2 }}
-      >
-        Submit
-      </Button>
+      </Grid>
+    );
+  };
+
+  const handleFormSubmit = (data: FormValues) => {
+    onSubmit(data);
+  };
+
+  const handleReset = () => {
+    reset(initialValues || {});
+  };
+
+  return (
+    <form onSubmit={handleSubmit(handleFormSubmit)} noValidate>
+      <Grid container spacing={2} direction={config.layout === 'horizontal' ? 'row' : 'column'}>
+        {config.fields.map(renderField)}
+      </Grid>
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid item xs={config.resetLabel ? 6 : 12}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+          >
+            {config.submitLabel || 'ثبت'}
+          </Button>
+        </Grid>
+        {config.resetLabel && (
+          <Grid item xs={6}>
+            <Button
+              type="button"
+              variant="outlined"
+              color="secondary"
+              fullWidth
+              onClick={handleReset}
+            >
+              {config.resetLabel}
+            </Button>
+          </Grid>
+        )}
+      </Grid>
     </form>
   );
-};
+}

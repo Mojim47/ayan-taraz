@@ -16,7 +16,7 @@ export namespace Chat {
       unreadCount: number;
     }
   
-    export interface ChatState {
+    export interface ChatTypes {
       rooms: Room[];
       activeRoom: string | null;
       messages: Record<string, Message[]>;

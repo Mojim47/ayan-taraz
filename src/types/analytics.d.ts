@@ -1,4 +1,3 @@
-// src/types/analytics.ts
 export interface AnalyticsData {
   visitors: {
     total: number;
@@ -83,4 +82,7 @@ declare namespace Analytics {
   type EventType = PageView | UserEvent | PerformanceMetric | ErrorEvent;
 }
 
-export = Analytics;
+export interface TimeRange {
+  start: Date;
+  end: Date;
+}

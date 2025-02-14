@@ -1,12 +1,11 @@
-import React from 'react';
 import { 
   ThemeProvider, 
   CssBaseline, 
   Box, 
   Container,
-  Theme,
-  SxProps
+  Theme 
 } from '@mui/material';
+import { SxProps } from '@mui/system';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes';
@@ -14,63 +13,50 @@ import { DateTime } from './components/common/DateTime';
 import { store } from './store';
 import theme from './theme';
 
-// تعریف تایپ‌ها
-interface DateTimeProps {
-  date: Date;
-  format?: string;
-  showIcon?: boolean;
-  showTimeAgo?: boolean;
-  variant?: 'h6' | 'body1' | 'body2';
-  color?: 'primary' | 'secondary' | 'textPrimary' | 'textSecondary';
-  updateInterval?: number;
-}
-
-// تعریف استایل‌های مشترک
-const containerStyles: SxProps<Theme> = {
-  minHeight: '100vh',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 2,
-  py: 3,
-  direction: 'rtl'
+// تعریف استایل‌ها به صورت مستقیم با type
+const styles: Record<string, SxProps<Theme>> = {
+  container: {
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+    py: 3,
+    direction: 'rtl'
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    mb: 2,
+    p: 2,
+    bgcolor: 'background.paper',
+    borderRadius: 1,
+    boxShadow: 1
+  },
+  mainContent: {
+    flex: 1,
+    bgcolor: 'background.paper',
+    borderRadius: 1,
+    boxShadow: 1,
+    p: 2
+  },
+  footer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    mt: 2,
+    pt: 2,
+    borderTop: '1px solid',
+    borderColor: 'divider',
+    p: 2,
+    bgcolor: 'background.paper',
+    borderRadius: 1,
+    boxShadow: 1
+  }
 };
 
-const headerStyles: SxProps<Theme> = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  mb: 2,
-  p: 2,
-  bgcolor: 'background.paper',
-  borderRadius: 1,
-  boxShadow: 1
-};
-
-const mainContentStyles: SxProps<Theme> = {
-  flex: 1,
-  bgcolor: 'background.paper',
-  borderRadius: 1,
-  boxShadow: 1,
-  p: 2
-};
-
-const footerStyles: SxProps<Theme> = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  mt: 2,
-  pt: 2,
-  borderTop: '1px solid',
-  borderColor: 'divider',
-  p: 2,
-  bgcolor: 'background.paper',
-  borderRadius: 1,
-  boxShadow: 1
-};
-
-const App: React.FC = () => {
-  // تنظیم تاریخ ثابت برای همه کامپوننت‌ها
-  const currentDate = new Date('2025-02-13T18:27:39.000Z');
+const App = () => {
+  const currentDate = new Date('2025-02-14T16:27:07.000Z');
 
   return (
     <Provider store={store}>
@@ -78,9 +64,11 @@ const App: React.FC = () => {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Container maxWidth="lg">
-            <Box sx={containerStyles}>
-              {/* هدر */}
-              <Box sx={headerStyles}>
+            <Box sx={styles.container}>
+              <Box 
+                component="header" 
+                sx={styles.header}
+              >
                 <DateTime 
                   date={currentDate}
                   showIcon
@@ -91,20 +79,24 @@ const App: React.FC = () => {
                 />
               </Box>
 
-              {/* محتوای اصلی */}
-              <Box sx={mainContentStyles}>
+              <Box 
+                component="main" 
+                sx={styles.mainContent}
+              >
                 <AppRoutes />
               </Box>
 
-              {/* فوتر */}
-              <Box sx={footerStyles}>
+              <Box 
+                component="footer" 
+                sx={styles.footer}
+              >
                 <DateTime 
                   date={currentDate}
                   format="YYYY/MM/DD"
                   showIcon={false}
                   showTimeAgo={false}
                   variant="body2"
-                  color="textSecondary"
+                  color="text.secondary"
                 />
                 <DateTime 
                   date={currentDate}

@@ -33,13 +33,7 @@ import {
   TrendingUp,
   Assignment,
 } from '@mui/icons-material';
-import type { 
-  AnalyticsData, 
-  TimeRange,
-  RevenueByService,
-  UserLocation,
-  PageView 
-} from '../../../types/analytics';
+import type { AnalyticsData, TimeRange } from '../../../types/analytics';
 
 interface Props {
   data: AnalyticsData;

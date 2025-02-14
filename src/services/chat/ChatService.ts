@@ -1,6 +1,7 @@
 // src/services/chat/ChatService.ts
 import axios from 'axios';
 import { ErrorService } from '../ErrorService';
+
 export interface Message {
   id: string;
   text: string;
@@ -13,7 +14,7 @@ export interface ChatResponse {
   suggestions?: string[];
   action?: {
     type: 'REDIRECT' | 'CALCULATE_TAX' | 'BOOK_CONSULTATION';
-    payload?: any;
+    payload?: unknown;
   };
 }
 

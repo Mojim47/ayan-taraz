@@ -57,7 +57,10 @@ const ChatBox: React.FC = () => {
 
     setMessages(prev => [...prev, newMessage]);
     setInput('');
-    // اینجا می‌توانید پاسخ ربات را اضافه کنید
+
+    // استفاده از handleAction با یک اکشن نمونه
+    const botResponse: ChatAction = { type: 'CALCULATE_TAX' };
+    handleAction(botResponse);
   };
 
   return (

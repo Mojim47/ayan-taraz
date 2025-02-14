@@ -1,8 +1,4 @@
-/// <reference types="jest" />
-import React from 'react';
-import { screen } from '@testing-library/react';
-import { renderWithProviders } from '../setupTests';
-
+import _React from 'react';
 describe('Dashboard Integration', () => {
   it('should render dashboard', () => {
     // If you have a Dashboard component, uncomment and use this:
