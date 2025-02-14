@@ -17,7 +17,12 @@ export default defineConfig({
     }),
   ],
   test: {
-    environment: 'node',
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/setupTests.tsx'],
+    coverage: {
+      reporter: ['text', 'json', 'html'],
+    },
     include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']
   }
-})
+});

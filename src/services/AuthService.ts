@@ -1,4 +1,4 @@
-import { LoginCredentials, LoginResponse } from '../types/auth';
+import { LoginCredentials, LoginResponse } from '../types/auth.types';
 
 export class AuthService {
   private static baseUrl = process.env.REACT_APP_API_URL;

@@ -1,61 +1,98 @@
 import '@testing-library/jest-dom';
-import React from 'react';
-import { configureStore } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import authReducer from './store/slices/authSlice';
-import uiReducer from './store/slices/uiSlice';
-import { vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
 import { afterEach } from 'vitest';
+import { cleanup, render } from '@testing-library/react';
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 
-declare global {
-  const describe: typeof vi.describe;
-  const it: typeof vi.it;
-  const expect: typeof vi.expect;
-  const beforeEach: typeof vi.beforeEach;
-  const afterEach: typeof vi.afterEach;
-
-  interface Window {
-    console: Console;
-    localStorage: Storage;
-    location: Location;
-  }
+// تعریف interface برای state
+interface AuthState {
+  user: {
+    id: string;
+    username: string;
+    email: string;
+  } | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  loading: boolean;
+  error: string | null;
 }
 
-window.describe = vi.describe;
-window.it = vi.it;
-window.expect = vi.expect;
-window.beforeEach = vi.beforeEach;
-window.afterEach = vi.afterEach;
+interface UIState {
+  darkMode: boolean;
+  sidebarOpen: boolean;
+  currentTime: string;
+}
+
+interface RootState {
+  auth: AuthState;
+  ui: UIState;
+}
+
+const mockInitialState: RootState = {
+  auth: {
+    user: {
+      id: '1',
+      username: 'Mojim47',
+      email: 'test@example.com'
+    },
+    token: 'test-token',
+    isAuthenticated: true,
+    loading: false,
+    error: null
+  },
+  ui: {
+    darkMode: false,
+    sidebarOpen: true,
+    currentTime: '2025-02-13 18:24:40'
+  }
+};
 
 afterEach(() => {
   cleanup();
 });
 
-interface CustomMatchers<R = void> {
-  toBeInTheDocument(): R;
+function setupStore(preloadedState: Partial<RootState> = {}) {
+  return configureStore({
+    reducer: {
+      auth: (state = mockInitialState.auth) => state,
+      ui: (state = mockInitialState.ui) => state
+    },
+    preloadedState: {
+      ...mockInitialState,
+      ...preloadedState
+    }
+  });
 }
 
-declare module 'vitest' {
-  interface Assertion extends CustomMatchers {}
-  interface AsymmetricMatchersContaining extends CustomMatchers {}
-}
-
-const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    ui: uiReducer,
-  },
-});
-
-interface ProviderProps {
+// تعریف تایپ برای props کامپوننت Wrapper
+interface WrapperProps {
   children: React.ReactNode;
 }
 
-const AllTheProviders: React.FC<ProviderProps> = ({ children }) => {
-  return <Provider store={store}>{children}</Provider>;
-};
+export function renderWithProviders(
+  ui: React.ReactElement,
+  {
+    preloadedState = {},
+    store = setupStore(preloadedState),
+    route = '/',
+    ...renderOptions
+  } = {}
+) {
+  function Wrapper({ children }: WrapperProps) {
+    return (
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[route]}>
+          {children}
+        </MemoryRouter>
+      </Provider>
+    );
+  }
 
-export const renderWithProviders = (ui: React.ReactElement) =>
-  render(ui, { wrapper: AllTheProviders });
+  return {
+    store,
+    ...render(ui, { wrapper: Wrapper, ...renderOptions })
+  };
+}
+
+export * from '@testing-library/react';

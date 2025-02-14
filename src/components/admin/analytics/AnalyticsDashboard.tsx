@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ReactElement } from 'react';
 import {
   Box,
   Grid,
@@ -33,7 +33,13 @@ import {
   TrendingUp,
   Assignment,
 } from '@mui/icons-material';
-import { AnalyticsData, TimeRange } from '../../../types/analytics';
+import { 
+  AnalyticsData, 
+  TimeRange,
+  RevenueByService,
+  UserLocation,
+  PageView 
+} from '../../../types/analytics';
 
 interface AnalyticsDashboardProps {
   data: AnalyticsData;
@@ -46,6 +52,11 @@ interface StatCardProps {
   value: string | number;
   subtitle: string;
   color: string;
+}
+
+interface ChartContainerProps {
+  title: string;
+  children: ReactElement;
 }
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'] as const;
@@ -82,6 +93,19 @@ const StatCard: React.FC<StatCardProps> = ({ icon, title, value, subtitle, color
   </Card>
 );
 
+const ChartContainer = ({ title, children }: ChartContainerProps) => (
+  <Paper sx={{ p: 3, height: 400 }}>
+    <Typography variant="h6" gutterBottom>
+      {title}
+    </Typography>
+    <Box sx={{ width: '100%', height: '90%' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        {React.cloneElement(children)}
+      </ResponsiveContainer>
+    </Box>
+  </Paper>
+);
+
 export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   data,
   onTimeRangeChange,
@@ -92,8 +116,8 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     const range = event.target.value as keyof typeof TIME_RANGES;
     setTimeRange(range);
     
-    const end = new Date();
-    const start = new Date();
+    const end = new Date('2025-02-14T13:42:21.000Z');
+    const start = new Date('2025-02-14T13:42:21.000Z');
     start.setDate(start.getDate() - TIME_RANGES[range]);
     
     onTimeRangeChange({ start, end });
@@ -192,9 +216,9 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 outerRadius={80}
                 label
               >
-                {data.revenue.byService.map((entry, index) => (
+                {data.revenue.byService.map((entry: RevenueByService, index: number) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`pie-cell-${entry.service}-${index}`}
                     fill={COLORS[index % COLORS.length]}
                   />
                 ))}
@@ -220,21 +244,5 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     </Box>
   );
 };
-
-interface ChartContainerProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-const ChartContainer: React.FC<ChartContainerProps> = ({ title, children }) => (
-  <Paper sx={{ p: 3, height: 400 }}>
-    <Typography variant="h6" gutterBottom>
-      {title}
-    </Typography>
-    <ResponsiveContainer width="100%" height="90%">
-      {children}
-    </ResponsiveContainer>
-  </Paper>
-);
 
 export default AnalyticsDashboard;

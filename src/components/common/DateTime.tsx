@@ -1,49 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Box, Tooltip } from '@mui/material';
 import { Schedule } from '@mui/icons-material';
-import { formatDateTime, timeAgo } from '../../utils/dateUtils';
+import { format, formatDistance } from 'date-fns';
+import { fa } from 'date-fns/locale'; // تغییر نحوه import
 
 interface DateTimeProps {
-  date: Date | string;
+  date: Date;
   format?: string;
   showIcon?: boolean;
   showTimeAgo?: boolean;
+  variant?: 'h6' | 'body1' | 'body2';
+  color?: 'primary' | 'secondary' | 'textPrimary' | 'textSecondary' | 'action';
   updateInterval?: number;
-  variant?: 'body1' | 'body2' | 'caption';
-  color?: 'primary' | 'secondary' | 'textPrimary' | 'textSecondary';
 }
 
 export const DateTime: React.FC<DateTimeProps> = ({
   date,
-  format = 'YYYY-MM-DD HH:mm:ss',
+  format: dateFormat = 'yyyy-MM-dd HH:mm:ss',
   showIcon = true,
   showTimeAgo = true,
-  updateInterval = 60000, // 1 minute
-  variant = 'body2',
-  color = 'textSecondary',
+  variant = 'body1',
+  color = 'textPrimary',
+  updateInterval = 60000,
 }) => {
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const [, setUpdate] = useState(0);
 
   useEffect(() => {
     if (!showTimeAgo) return;
-
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
+      setUpdate(prev => prev + 1);
     }, updateInterval);
-
     return () => clearInterval(timer);
   }, [showTimeAgo, updateInterval]);
 
-  const formattedDate = formatDateTime(dateObj, format);
-  const timeAgoText = timeAgo(dateObj);
+  const formattedDate = format(date, dateFormat, { locale: fa });
+  const timeAgo = showTimeAgo
+    ? formatDistance(date, new Date('2025-02-13T18:43:22.000Z'), { addSuffix: true, locale: fa })
+    : '';
 
+  const iconColor = color === 'textSecondary' ? 'action' : color;
+  
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      {showIcon && <Schedule fontSize="small" color={color} />}
-      <Tooltip title={showTimeAgo ? formattedDate : timeAgoText}>
+      {showIcon && <Schedule fontSize="small" color={iconColor as 'primary' | 'secondary' | 'action'} />}
+      <Tooltip title={timeAgo}>
         <Typography variant={variant} color={color} component="span">
-          {showTimeAgo ? timeAgoText : formattedDate}
+          {formattedDate}
         </Typography>
       </Tooltip>
     </Box>

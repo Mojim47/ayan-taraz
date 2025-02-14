@@ -1,27 +1,32 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface UiState {
-  isLoading: boolean;
-  error: string | null;
+interface UIState {
+  darkMode: boolean;
+  sidebarOpen: boolean;
+  currentTime: string;
 }
 
-const initialState: UiState = {
-  isLoading: false,
-  error: null,
+const initialState: UIState = {
+  darkMode: false,
+  sidebarOpen: true,
+  currentTime: '2025-02-13 18:19:45'
 };
 
 const uiSlice = createSlice({
   name: 'ui',
   initialState,
   reducers: {
-    setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    toggleDarkMode: (state) => {
+      state.darkMode = !state.darkMode;
     },
-    setError: (state, action: PayloadAction<string | null>) => {
-      state.error = action.payload;
+    toggleSidebar: (state) => {
+      state.sidebarOpen = !state.sidebarOpen;
     },
-  },
+    setCurrentTime: (state, action: PayloadAction<string>) => {
+      state.currentTime = action.payload;
+    }
+  }
 });
 
-export const { setLoading, setError } = uiSlice.actions;
+export const { toggleDarkMode, toggleSidebar, setCurrentTime } = uiSlice.actions;
 export default uiSlice.reducer;

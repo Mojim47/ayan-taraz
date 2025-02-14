@@ -1,16 +1,14 @@
-/// <reference types="jest" />
-
-import React from 'react';
+import { describe, it, expect, vi } from 'vitest';
 import { fireEvent, screen } from '@testing-library/react';
 import { renderWithProviders } from '../../../setupTests';
-import { LoginForm } from './auth/LoginForm';
+import { LoginForm } from '../LoginForm';
 
 describe('LoginForm', () => {
   it('should render login form', () => {
-    const handleSubmit = jest.fn();
+    const handleSubmit = vi.fn();
     renderWithProviders(<LoginForm onSubmit={handleSubmit} />);
 
-    const loginButton = screen.getByRole('button', { name: /login/i });
+    const loginButton = screen.getByRole('button');
     expect(loginButton).toBeInTheDocument();
 
     // Ensure input fields are rendered
@@ -21,8 +19,8 @@ describe('LoginForm', () => {
     expect(passwordInput).toBeInTheDocument();
   });
 
-  it('should handle form submission', () => {
-    const handleSubmit = jest.fn();
+  it('should handle form submission', async () => {
+    const handleSubmit = vi.fn();
     renderWithProviders(<LoginForm onSubmit={handleSubmit} />);
 
     // Simulate user input
@@ -34,7 +32,7 @@ describe('LoginForm', () => {
       target: { value: 'password123' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+    fireEvent.click(screen.getByRole('button'));
 
     // Check that handleSubmit is called with correct form values
     expect(handleSubmit).toHaveBeenCalledWith({

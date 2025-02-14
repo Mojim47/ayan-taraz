@@ -2,7 +2,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthService } from '../services/AuthService';
-import { LoginCredentials, User } from '../types/auth';
+import { LoginCredentials, User } from '../types/auth.types';
 
 export const useAuth = () => {
   const navigate = useNavigate();

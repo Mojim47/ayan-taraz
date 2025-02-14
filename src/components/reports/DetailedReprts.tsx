@@ -13,17 +13,23 @@ import {
   Typography,
 } from '@mui/material';
 import { Download } from '@mui/icons-material';
-import { AnalyticsData } from '../../../types/analytics';
+import { 
+  AnalyticsData, 
+  UserAnalytics, 
+  RevenueAnalytics, 
+  ConsultationAnalytics 
+} from '../../../types/analytics';
 
 interface DetailedReportsProps {
   data: AnalyticsData;
 }
 
 type ReportType = 'users' | 'revenue' | 'consultations';
+type ReportDataItem = UserAnalytics | RevenueAnalytics | ConsultationAnalytics;
 
 interface TableConfig {
   headers: string[];
-  getRowData: (item: any) => React.ReactNode[];
+  getRowData: (item: ReportDataItem) => React.ReactNode[];
 }
 
 const REPORT_TYPES: Record<ReportType, string> = {
@@ -35,7 +41,7 @@ const REPORT_TYPES: Record<ReportType, string> = {
 const TABLE_CONFIGS: Record<ReportType, TableConfig> = {
   users: {
     headers: ['نام کاربر', 'تاریخ عضویت', 'تعداد مشاوره', 'مجموع پرداخت'],
-    getRowData: (user) => [
+    getRowData: (user: UserAnalytics) => [
       user.name,
       new Date(user.joinDate).toLocaleDateString('fa-IR'),
       user.consultationCount,
@@ -47,7 +53,7 @@ const TABLE_CONFIGS: Record<ReportType, TableConfig> = {
   },
   revenue: {
     headers: ['تاریخ', 'نوع خدمت', 'تعداد', 'مبلغ کل'],
-    getRowData: (revenue) => [
+    getRowData: (revenue: RevenueAnalytics) => [
       new Date(revenue.date).toLocaleDateString('fa-IR'),
       revenue.serviceType,
       revenue.count,
@@ -59,7 +65,7 @@ const TABLE_CONFIGS: Record<ReportType, TableConfig> = {
   },
   consultations: {
     headers: ['تاریخ', 'مشاور', 'کاربر', 'وضعیت', 'امتیاز'],
-    getRowData: (consultation) => [
+    getRowData: (consultation: ConsultationAnalytics) => [
       new Date(consultation.date).toLocaleDateString('fa-IR'),
       consultation.advisorName,
       consultation.userName,
@@ -74,20 +80,16 @@ export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
 
   const handleGenerateReport = async () => {
     try {
-      // در اینجا می‌توانید لاجیک دانلود گزارش را پیاده‌سازی کنید
       console.info(`Generating ${reportType} report...`);
-      // مثال: await generateReportPDF(data[reportType]);
     } catch (error) {
       console.error('Error generating report:', error);
-      // می‌توانید از یک کامپوننت نوتیفیکیشن برای نمایش خطا استفاده کنید
     }
   };
 
   const currentConfig = useMemo(() => TABLE_CONFIGS[reportType], [reportType]);
   
   const getReportData = useMemo(() => {
-    // این تابع باید بر اساس نوع گزارش، داده‌های مناسب را از data استخراج کند
-    return data[reportType] || [];
+    return (data[reportType]?.data || []) as ReportDataItem[];
   }, [data, reportType]);
 
   return (
@@ -98,7 +100,7 @@ export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
           <ButtonGroup variant="outlined">
-            {Object.entries(REPORT_TYPES).map(([type, label]) => (
+            {Object.entries(REPORT_TYPES).map(([type, label]: [string, string]) => (
               <Button
                 key={type}
                 onClick={() => setReportType(type as ReportType)}
@@ -124,16 +126,16 @@ export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
         <Table>
           <TableHead>
             <TableRow>
-              {currentConfig.headers.map((header) => (
-                <TableCell key={header}>{header}</TableCell>
+              {currentConfig.headers.map((header: string, headerIndex: number) => (
+                <TableCell key={`header-${headerIndex}`}>{header}</TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {getReportData.map((item, index) => (
-              <TableRow key={index}>
-                {currentConfig.getRowData(item).map((cell, cellIndex) => (
-                  <TableCell key={cellIndex}>{cell}</TableCell>
+            {getReportData.map((item: ReportDataItem, index: number) => (
+              <TableRow key={`row-${index}`}>
+                {currentConfig.getRowData(item).map((cell: React.ReactNode, cellIndex: number) => (
+                  <TableCell key={`cell-${index}-${cellIndex}`}>{cell}</TableCell>
                 ))}
               </TableRow>
             ))}

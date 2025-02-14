@@ -1,70 +1,66 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { TextField, Button, Box, Typography } from '@mui/material';
+import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { TextField, Button, Box, Alert } from '@mui/material';
-import { useAuth } from '../../hooks/useStore';
-import { LoginCredentials } from '../../types/auth';
 
-const schema = yup
-  .object({
-    username: yup.string().required('نام کاربری الزامی است'),
-    password: yup.string().required('رمز عبور الزامی است'),
-    rememberMe: yup.boolean(),
-  })
-  .required();
+interface LoginFormProps {
+  onSubmit: (values: { username: string; password: string }) => void;
+}
 
-export const LoginForm: React.FC = () => {
-  const { login, loading, error } = useAuth();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginCredentials>({
-    resolver: yupResolver(schema),
+const validationSchema = yup.object({
+  username: yup.string().required('نام کاربری الزامی است'),
+  password: yup.string().required('رمز عبور الزامی است'),
+});
+
+export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
+  const formik = useFormik({
+    initialValues: {
+      username: '',
+      password: '',
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      onSubmit(values);
+    },
   });
 
-  const onSubmit = async (data: LoginCredentials) => {
-    await login(data);
-  };
-
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
-
+    <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
       <TextField
-        margin="normal"
         fullWidth
+        id="username"
+        name="username"
         label="نام کاربری"
-        autoFocus
-        error={!!errors.username}
-        helperText={errors.username?.message}
-        {...register('username')}
-      />
-
-      <TextField
+        value={formik.values.username}
+        onChange={formik.handleChange}
+        error={formik.touched.username && Boolean(formik.errors.username)}
+        helperText={formik.touched.username && formik.errors.username}
         margin="normal"
+        aria-label="username"
+      />
+      <TextField
         fullWidth
+        id="password"
+        name="password"
         label="رمز عبور"
         type="password"
-        error={!!errors.password}
-        helperText={errors.password?.message}
-        {...register('password')}
+        value={formik.values.password}
+        onChange={formik.handleChange}
+        error={formik.touched.password && Boolean(formik.errors.password)}
+        helperText={formik.touched.password && formik.errors.password}
+        margin="normal"
+        aria-label="password"
       />
-
       <Button
         type="submit"
         fullWidth
         variant="contained"
         sx={{ mt: 3, mb: 2 }}
-        disabled={loading}
       >
-        {loading ? 'در حال ورود...' : 'ورود'}
+        ورود
       </Button>
     </Box>
   );
 };
+
+export default LoginForm;
