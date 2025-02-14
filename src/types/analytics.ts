@@ -23,19 +23,16 @@ export interface ConsultationAnalytics {
 export interface RevenueByService {
   service: string;
   amount: number;
-  percentage: number;
 }
 
 export interface UserLocation {
   city: string;
   count: number;
-  percentage: number;
 }
 
 export interface PageView {
   path: string;
   views: number;
-  unique: number;
 }
 
 export interface AnalyticsData {
@@ -54,13 +51,11 @@ export interface AnalyticsData {
   revenue: {
     total: number;
     thisMonth: number;
-    growth: number;
     byService: RevenueByService[];
     data: RevenueAnalytics[];
   };
   consultations: {
     total: number;
-    completed: number;
     satisfaction: number;
     data: ConsultationAnalytics[];
   };

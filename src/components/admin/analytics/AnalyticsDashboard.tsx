@@ -1,4 +1,4 @@
-import React, { useState, ReactElement } from 'react';
+import React, { useState, type ReactElement } from 'react';
 import {
   Box,
   Grid,
@@ -33,7 +33,7 @@ import {
   TrendingUp,
   Assignment,
 } from '@mui/icons-material';
-import { 
+import type { 
   AnalyticsData, 
   TimeRange,
   RevenueByService,
@@ -41,7 +41,7 @@ import {
   PageView 
 } from '../../../types/analytics';
 
-interface AnalyticsDashboardProps {
+interface Props {
   data: AnalyticsData;
   onTimeRangeChange: (range: TimeRange) => void;
 }
@@ -66,7 +66,7 @@ const TIME_RANGES = {
   '90d': 90,
 } as const;
 
-const StatCard: React.FC<StatCardProps> = ({ icon, title, value, subtitle, color }) => (
+const StatCard = ({ icon, title, value, subtitle, color }: StatCardProps): JSX.Element => (
   <Card>
     <CardContent>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -93,31 +93,28 @@ const StatCard: React.FC<StatCardProps> = ({ icon, title, value, subtitle, color
   </Card>
 );
 
-const ChartContainer = ({ title, children }: ChartContainerProps) => (
+const ChartContainer = ({ title, children }: ChartContainerProps): JSX.Element => (
   <Paper sx={{ p: 3, height: 400 }}>
     <Typography variant="h6" gutterBottom>
       {title}
     </Typography>
     <Box sx={{ width: '100%', height: '90%' }}>
-      <ResponsiveContainer width="100%" height="100%">
-        {React.cloneElement(children)}
+      <ResponsiveContainer>
+        {children}
       </ResponsiveContainer>
     </Box>
   </Paper>
 );
 
-export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
-  data,
-  onTimeRangeChange,
-}) => {
+export const AnalyticsDashboard = ({ data, onTimeRangeChange }: Props): JSX.Element => {
   const [timeRange, setTimeRange] = useState<keyof typeof TIME_RANGES>('7d');
 
-  const handleTimeRangeChange = (event: SelectChangeEvent) => {
+  const handleTimeRangeChange = (event: SelectChangeEvent<string>): void => {
     const range = event.target.value as keyof typeof TIME_RANGES;
     setTimeRange(range);
     
-    const end = new Date('2025-02-14T13:42:21.000Z');
-    const start = new Date('2025-02-14T13:42:21.000Z');
+    const end = new Date('2025-02-14T14:22:39.000Z');
+    const start = new Date('2025-02-14T14:22:39.000Z');
     start.setDate(start.getDate() - TIME_RANGES[range]);
     
     onTimeRangeChange({ start, end });
@@ -216,7 +213,7 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
                 outerRadius={80}
                 label
               >
-                {data.revenue.byService.map((entry: RevenueByService, index: number) => (
+                {data.revenue.byService.map((entry, index) => (
                   <Cell
                     key={`pie-cell-${entry.service}-${index}`}
                     fill={COLORS[index % COLORS.length]}
@@ -236,7 +233,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
               <XAxis dataKey="city" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill="#2196F3" name="تعداد کاربران" />
+              <Bar 
+                dataKey="count"
+                fill="#2196F3"
+                name="تعداد کاربران"
+              />
             </BarChart>
           </ChartContainer>
         </Grid>

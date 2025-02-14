@@ -18,18 +18,24 @@ import {
   UserAnalytics, 
   RevenueAnalytics, 
   ConsultationAnalytics 
-} from '../../../types/analytics';
+} from '../../types/analytics';
 
 interface DetailedReportsProps {
   data: AnalyticsData;
 }
 
 type ReportType = 'users' | 'revenue' | 'consultations';
-type ReportDataItem = UserAnalytics | RevenueAnalytics | ConsultationAnalytics;
 
-interface TableConfig {
+type ReportDataType = {
+  users: UserAnalytics;
+  revenue: RevenueAnalytics;
+  consultations: ConsultationAnalytics;
+};
+
+
+interface TableConfig<T> {
   headers: string[];
-  getRowData: (item: ReportDataItem) => React.ReactNode[];
+  getRowData: (item: T) => React.ReactNode[];
 }
 
 const REPORT_TYPES: Record<ReportType, string> = {
@@ -38,8 +44,11 @@ const REPORT_TYPES: Record<ReportType, string> = {
   consultations: 'مشاوره‌ها',
 } as const;
 
-const TABLE_CONFIGS: Record<ReportType, TableConfig> = {
+const TABLE_CONFIGS: {
+  [K in ReportType]: TableConfig<ReportDataType[K]>
+} = {
   users: {
+    
     headers: ['نام کاربر', 'تاریخ عضویت', 'تعداد مشاوره', 'مجموع پرداخت'],
     getRowData: (user: UserAnalytics) => [
       user.name,
@@ -75,10 +84,10 @@ const TABLE_CONFIGS: Record<ReportType, TableConfig> = {
   },
 };
 
-export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
+export const DetailedReports = ({ data }: DetailedReportsProps): JSX.Element => {
   const [reportType, setReportType] = useState<ReportType>('users');
 
-  const handleGenerateReport = async () => {
+  const handleGenerateReport = async (): Promise<void> => {
     try {
       console.info(`Generating ${reportType} report...`);
     } catch (error) {
@@ -88,8 +97,8 @@ export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
 
   const currentConfig = useMemo(() => TABLE_CONFIGS[reportType], [reportType]);
   
-  const getReportData = useMemo(() => {
-    return (data[reportType]?.data || []) as ReportDataItem[];
+  const reportData = useMemo(() => {
+    return data[reportType]?.data ?? [];
   }, [data, reportType]);
 
   return (
@@ -100,10 +109,10 @@ export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
           <ButtonGroup variant="outlined">
-            {Object.entries(REPORT_TYPES).map(([type, label]: [string, string]) => (
+            {(Object.entries(REPORT_TYPES) as [ReportType, string][]).map(([type, label]) => (
               <Button
-                key={type}
-                onClick={() => setReportType(type as ReportType)}
+                key={`btn-${type}`}
+                onClick={() => setReportType(type)}
                 variant={reportType === type ? 'contained' : 'outlined'}
                 sx={{ minWidth: 100 }}
               >
@@ -126,20 +135,22 @@ export const DetailedReports: React.FC<DetailedReportsProps> = ({ data }) => {
         <Table>
           <TableHead>
             <TableRow>
-              {currentConfig.headers.map((header: string, headerIndex: number) => (
-                <TableCell key={`header-${headerIndex}`}>{header}</TableCell>
+              {currentConfig.headers.map((header, index) => (
+                <TableCell key={`header-${index}`}>{header}</TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {getReportData.map((item: ReportDataItem, index: number) => (
-              <TableRow key={`row-${index}`}>
-                {currentConfig.getRowData(item).map((cell: React.ReactNode, cellIndex: number) => (
-                  <TableCell key={`cell-${index}-${cellIndex}`}>{cell}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
+           {reportData.map((item, index) => (
+           <TableRow key={`row-${index}`}>
+              {currentConfig.getRowData(item as ReportDataType[typeof reportType]).map(
+          (cell, cellIndex) => (
+          <TableCell key={`cell-${index}-${cellIndex}`}>{cell}</TableCell>
+                 )
+                    )}
+                   </TableRow>
+                   ))}
+                 </TableBody>
         </Table>
       </TableContainer>
     </Paper>
