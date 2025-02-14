@@ -22,3 +22,9 @@ export interface ErrorBoundaryState {
   error?: Error;
   errorInfo?: React.ErrorInfo;
 }
+
+export interface ErrorDetails {
+  message: string;
+  code: number;
+  data?: Record<string, unknown>;
+}
