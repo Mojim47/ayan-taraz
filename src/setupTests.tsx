@@ -4,6 +4,7 @@ import { cleanup, render } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 // تعریف interface برای state
 interface AuthState {
@@ -29,6 +30,9 @@ interface RootState {
   ui: UIState;
 }
 
+// ایجاد تم پیش‌فرض
+const theme = createTheme();
+
 const mockInitialState: RootState = {
   auth: {
     user: {
@@ -44,7 +48,7 @@ const mockInitialState: RootState = {
   ui: {
     darkMode: false,
     sidebarOpen: true,
-    currentTime: '2025-02-13 18:24:40'
+    currentTime: '2025-02-15 08:13:38' // به‌روزرسانی شده با زمان دقیق فعلی
   }
 };
 
@@ -82,9 +86,11 @@ export function renderWithProviders(
   function Wrapper({ children }: WrapperProps) {
     return (
       <Provider store={store}>
-        <MemoryRouter initialEntries={[route]}>
-          {children}
-        </MemoryRouter>
+        <ThemeProvider theme={theme}>
+          <MemoryRouter initialEntries={[route]}>
+            {children}
+          </MemoryRouter>
+        </ThemeProvider>
       </Provider>
     );
   }
@@ -94,5 +100,20 @@ export function renderWithProviders(
     ...render(ui, { wrapper: Wrapper, ...renderOptions })
   };
 }
+
+// تنظیم matchMedia برای تست‌های Material-UI
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
 
 export * from '@testing-library/react';

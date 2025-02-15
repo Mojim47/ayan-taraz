@@ -26,7 +26,7 @@ const Articles = () => {
   const [page, setPage] = useState(1);
 
   // در نسخه واقعی، این داده‌ها از API دریافت می‌شوند
-  const [articles, setArticles] = useState<Article[]>([
+  const [articles] = useState<Article[]>([
     // نمونه داده
   ]);
 

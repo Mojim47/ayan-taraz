@@ -1,4 +1,3 @@
-// src/components/docs/APIDocumentation.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -24,16 +23,21 @@ import {
   ExpandMore,
   ContentCopy,
   PlayArrow,
-  Code,
-  Description,
 } from '@mui/icons-material';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { APIEndpoint, APIGroup } from '../../types/api-docs';
 
+// تعریف interface برای پاسخ API
+interface APIResponse {
+  status: number;
+  data: unknown;
+  message?: string;
+}
+
 interface Props {
   groups: APIGroup[];
-  onTest?: (endpoint: APIEndpoint, params: unknown) => Promise<any>;
+  onTest?: (endpoint: APIEndpoint, params: Record<string, unknown>) => Promise<APIResponse>;
 }
 
 export const APIDocumentation: React.FC<Props> = ({ groups, onTest }) => {
@@ -96,7 +100,7 @@ export const APIDocumentation: React.FC<Props> = ({ groups, onTest }) => {
     } catch (error) {
       setTestParams({
         ...testParams,
-        [`${endpoint.path}:error`]: error.message,
+        [`${endpoint.path}:error`]: (error as Error).message,
       });
     }
   };

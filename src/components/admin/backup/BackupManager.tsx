@@ -37,7 +37,6 @@ import {
   BackupConfig,
   BackupType,
   BackupStatus,
-  BackupSchedule,
 } from '../../../types/backup';
 
 interface BackupManagerProps {

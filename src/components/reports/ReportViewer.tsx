@@ -1,4 +1,3 @@
-// src/components/report/ReportViewer.tsx
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -14,10 +13,8 @@ import {
 import {
   MoreVert,
   Refresh,
-  Download,
   FilterList,
-  Settings,
-} from '@mui/icons-material';
+} from '@mui/icons-material'; 
 import { DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
 import {
   BarChart,
@@ -47,7 +44,6 @@ interface Props {
   onExport: (format: 'pdf' | 'excel' | 'csv') => void;
   onConfigChange: (config: ReportConfig) => void;
 }
-
 export const ReportViewer: React.FC<Props> = ({
   config,
   data,

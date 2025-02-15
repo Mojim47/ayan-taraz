@@ -1,5 +1,4 @@
-// src/components/dashboard/AdminDashboard.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Grid,
@@ -9,7 +8,6 @@ import {
   Button,
   Menu,
   MenuItem,
-  Divider,
   CircularProgress,
   useTheme,
 } from '@mui/material';
@@ -26,15 +24,13 @@ import {
 import {
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { DashboardStats, Activity, Alert } from '../../types/dashboard';
+import { DashboardStats } from '../../types/dashboard';
 
 const formatNumber = (num: number): string => {
   return new Intl.NumberFormat('fa-IR').format(num);
@@ -101,99 +97,6 @@ export const AdminDashboard: React.FC<Props> = ({
           </Typography>
         </Box>
       )}
-    </Paper>
-  );
-
-  const SystemHealth = () => (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        وضعیت سیستم
-      </Typography>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-            <CircularProgress
-              variant="determinate"
-              value={stats.systemHealth.cpu}
-              color={stats.systemHealth.cpu > 80 ? 'error' : 'primary'}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-              }}
-            >
-              <Typography variant="caption">CPU</Typography>
-            </Box>
-          </Box>
-        </Grid>
-        {/* مشابه برای Memory و Disk */}
-      </Grid>
-    </Paper>
-  );
-
-  const RecentActivities = () => (
-    <Paper sx={{ p: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-        <Typography variant="h6">فعالیت‌های اخیر</Typography>
-        <IconButton size="small" onClick={onRefresh}>
-          <Refresh />
-        </IconButton>
-      </Box>
-      <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
-        {stats.recentActivities.map(activity => (
-          <Box
-            key={activity.id}
-            sx={{
-              py: 1,
-              borderBottom: 1,
-              borderColor: 'divider',
-              '&:last-child': { borderBottom: 0 },
-            }}
-          >
-            <Typography variant="subtitle2">{activity.action}</Typography>
-            <Typography variant="body2" color="text.secondary">
-              {activity.user} •{' '}
-              {new Date(activity.timestamp).toLocaleTimeString('fa-IR')}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-    </Paper>
-  );
-
-  const Alerts = () => (
-    <Paper sx={{ p: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        هشدارها
-      </Typography>
-      {stats.alerts.map(alert => (
-        <Box
-          key={alert.id}
-          sx={{
-            p: 1,
-            mb: 1,
-            borderRadius: 1,
-            bgcolor:
-              alert.type === 'error'
-                ? 'error.light'
-                : alert.type === 'warning'
-                  ? 'warning.light'
-                  : 'info.light',
-          }}
-        >
-          <Typography variant="body2">{alert.message}</Typography>
-          <Typography variant="caption" color="text.secondary">
-            {new Date(alert.timestamp).toLocaleString('fa-IR')}
-          </Typography>
-        </Box>
-      ))}
     </Paper>
   );
 
@@ -293,15 +196,96 @@ export const AdminDashboard: React.FC<Props> = ({
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <SystemHealth />
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                وضعیت سیستم
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                    <CircularProgress
+                      variant="determinate"
+                      value={stats.systemHealth.cpu}
+                      color={stats.systemHealth.cpu > 80 ? 'error' : 'primary'}
+                    />
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                      }}
+                    >
+                      <Typography variant="caption">CPU</Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+                {/* مشابه برای Memory و Disk */}
+              </Grid>
+            </Paper>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <RecentActivities />
+            <Paper sx={{ p: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h6">فعالیت‌های اخیر</Typography>
+                <IconButton size="small" onClick={onRefresh}>
+                  <Refresh />
+                </IconButton>
+              </Box>
+              <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
+                {stats.recentActivities.map(activity => (
+                  <Box
+                    key={activity.id}
+                    sx={{
+                      py: 1,
+                      borderBottom: 1,
+                      borderColor: 'divider',
+                      '&:last-child': { borderBottom: 0 },
+                    }}
+                  >
+                    <Typography variant="subtitle2">{activity.action}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {activity.user} •{' '}
+                      {new Date(activity.timestamp).toLocaleTimeString('fa-IR')}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Paper>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Alerts />
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                هشدارها
+              </Typography>
+              {stats.alerts.map(alert => (
+                <Box
+                  key={alert.id}
+                  sx={{
+                    p: 1,
+                    mb: 1,
+                    borderRadius: 1,
+                    bgcolor:
+                      alert.type === 'error'
+                        ? 'error.light'
+                        : alert.type === 'warning'
+                          ? 'warning.light'
+                          : 'info.light',
+                  }}
+                >
+                  <Typography variant="body2">{alert.message}</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {new Date(alert.timestamp).toLocaleString('fa-IR')}
+                  </Typography>
+                </Box>
+              ))}
+            </Paper>
           </Grid>
         </Grid>
       )}

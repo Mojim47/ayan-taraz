@@ -1,4 +1,3 @@
-// src/components/content/ContentCard.tsx
 import React from 'react';
 import {
   Card,
@@ -15,7 +14,7 @@ import { AccessTime, RemoveRedEye } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { Content } from '../../types/content';
 
-const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(() => ({  // حذف theme از پارامتر
   height: '100%',
   display: 'flex',
   flexDirection: 'column',

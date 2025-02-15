@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Box, IconButton } from '@mui/material';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles'; // حذف useTheme
 
 interface ImageSliderProps {
   images: string[];
@@ -75,7 +75,6 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({
   autoPlayInterval = 15000,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const theme = useTheme();
 
   const nextSlide = useCallback(() => {
     setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));

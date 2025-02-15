@@ -1,4 +1,3 @@
-// src/components/state/StateManager.tsx
 import React from 'react';
 import {
   Box,
@@ -14,25 +13,17 @@ import {
 } from '@mui/material';
 import {
   Refresh,
-  Delete,
-  PlayArrow,
-  Stop,
   Save,
   RestartAlt,
 } from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 
 export const StateManager: React.FC = () => {
-  const dispatch = useDispatch();
   const state = useSelector((state: RootState) => state);
 
   const handleResetState = () => {
     // اینجا می‌توانید state را ریست کنید
-  };
-
-  const handleClearCache = () => {
-    // اینجا می‌توانید cache را پاک کنید
   };
 
   const handleExportState = () => {

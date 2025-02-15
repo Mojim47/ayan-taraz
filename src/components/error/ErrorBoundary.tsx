@@ -1,4 +1,3 @@
-// src/components/error/ErrorBoundary.tsx
 import React, { Component, ErrorInfo } from 'react';
 import { Box, Paper, Typography, Button, Collapse } from '@mui/material';
 import { ErrorOutline, Refresh, BugReport } from '@mui/icons-material';
@@ -27,7 +26,7 @@ export class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  static getDerivedStateFromError(error: Error) {
+  static getDerivedStateFromError(_error: Error) { // اضافه کردن _ برای رفع خطای متغیر استفاده نشده
     return { hasError: true };
   }
 
@@ -37,10 +36,9 @@ export class ErrorBoundary extends Component<Props, State> {
       errorInfo,
     });
 
-    // ثبت خطا
     const errorLog: Partial<ErrorLog> = {
       timestamp: new Date(),
-      user: 'Mojim37', // کاربر فعلی
+      user: 'Mojim37',
       severity: 'error',
       source: 'client',
       message: error.message,
@@ -57,7 +55,6 @@ export class ErrorBoundary extends Component<Props, State> {
       this.props.onError(error, errorInfo);
     }
   }
-
   handleReload = () => {
     window.location.reload();
   };

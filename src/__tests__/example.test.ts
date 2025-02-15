@@ -1,4 +1,5 @@
-import { expect, vi } from '../jest.setup';
+import { expect, describe, it, vi } from 'vitest';
+import '@testing-library/jest-dom/extend-expect';
 
 describe('Example Test', () => {
   it('should work with custom matcher', () => {

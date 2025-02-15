@@ -1,5 +1,3 @@
-// src/pages/ArticleDetail.tsx
-import React from 'react';
 import {
   Container,
   Typography,
@@ -9,11 +7,9 @@ import {
   Divider,
   Paper,
 } from '@mui/material';
-import { useParams } from 'react-router-dom';
 import { AccessTime, RemoveRedEye, CalendarToday } from '@mui/icons-material';
 
 const ArticleDetail = () => {
-  const { slug } = useParams();
   // در نسخه واقعی، اطلاعات مقاله از API دریافت می‌شود
 
   return (
@@ -58,7 +54,7 @@ const ArticleDetail = () => {
           <Divider sx={{ my: 3 }} />
 
           <Box sx={{ display: 'flex', gap: 1 }}>
-            {['مالیات', 'حسابداری', 'کسب و کار'].map(tag => (
+            {['مالیات', 'حسابداری', 'کسب و کار'].map((tag) => (
               <Chip key={tag} label={tag} />
             ))}
           </Box>

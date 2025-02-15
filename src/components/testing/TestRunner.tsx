@@ -1,5 +1,4 @@
-// src/components/testing/TestRunner.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Paper,
@@ -24,17 +23,8 @@ import {
   Warning,
   ExpandMore,
   ExpandLess,
-  BugReport,
-  Speed,
 } from '@mui/icons-material';
-import { TestSuite, TestCase, TestStatus } from '../../types/testing';
-
-const statusColors: Record<TestStatus, string> = {
-  passed: 'success',
-  failed: 'error',
-  pending: 'warning',
-  skipped: 'default',
-};
+import { TestSuite, TestStatus } from '../../types/testing';
 
 const statusIcons: Record<TestStatus, JSX.Element> = {
   passed: <CheckCircle color="success" />,
@@ -141,7 +131,7 @@ export const TestRunner: React.FC<TestRunnerProps> = ({
           </Grid>
         </Grid>
 
-        {suites.map(suite => (
+        {suites.map((suite) => (
           <Paper key={suite.id} sx={{ mb: 2 }}>
             <Box
               sx={{
@@ -166,8 +156,8 @@ export const TestRunner: React.FC<TestRunnerProps> = ({
                     suite.failedTests > 0
                       ? 'error'
                       : suite.passedTests === suite.totalTests
-                        ? 'success'
-                        : 'warning'
+                      ? 'success'
+                      : 'warning'
                   }
                 />
                 <Typography variant="body2" color="text.secondary">
@@ -180,7 +170,7 @@ export const TestRunner: React.FC<TestRunnerProps> = ({
 
             <Collapse in={selectedSuite === suite.id}>
               <List dense>
-                {suite.testCases.map(test => (
+                {suite.testCases.map((test) => (
                   <React.Fragment key={test.id}>
                     <ListItem
                       button

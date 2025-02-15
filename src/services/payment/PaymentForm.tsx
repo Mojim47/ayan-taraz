@@ -1,4 +1,3 @@
-// src/components/payment/PaymentForm.tsx
 import React from 'react';
 import {
   Box,
@@ -13,7 +12,6 @@ import { ZarinpalService } from '../../services/payment/zarinpal';
 interface PaymentFormProps {
   amount: number;
   description: string;
-  onSuccess: (refId: number) => void;
   onError: (error: string) => void;
   userInfo?: {
     mobile?: string;
@@ -24,7 +22,6 @@ interface PaymentFormProps {
 export const PaymentForm: React.FC<PaymentFormProps> = ({
   amount,
   description,
-  onSuccess,
   onError,
   userInfo,
 }) => {

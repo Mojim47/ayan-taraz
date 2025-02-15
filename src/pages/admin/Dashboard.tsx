@@ -5,7 +5,6 @@ import {
   Typography,
   Box,
   LinearProgress,
-  useTheme,
 } from '@mui/material';
 import {
   BarChart,
@@ -57,8 +56,6 @@ const chartData = [
 ];
 
 const Dashboard = () => {
-  const theme = useTheme(); // تم استفاده‌شده در پروژه
-
   return (
     <Box>
       <Typography variant="h4" gutterBottom>

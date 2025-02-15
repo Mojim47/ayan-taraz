@@ -30,10 +30,14 @@ describe('ChatRoom', () => {
 
   it('renders chat room with correct information', () => {
     render(<ChatRoom room={mockRoom} currentUser={mockUser} />);
-    
+
     expect(screen.getByText('Test Room')).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
-    expect(screen.getByText('Status: delivered')).toBeInTheDocument();
-    expect(screen.getByText('New messages: 2')).toBeInTheDocument();
+    expect(screen.getByText((content, element) => {
+      return element.tagName.toLowerCase() === 'span' && content.includes('وضعیت: delivered');
+    })).toBeInTheDocument();
+    expect(screen.getByText((content, element) => {
+      return element.tagName.toLowerCase() === 'p' && content.includes('پیام‌های جدید: 2');
+    })).toBeInTheDocument();
   });
 });
