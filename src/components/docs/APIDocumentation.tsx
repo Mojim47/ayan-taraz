@@ -33,13 +33,13 @@ import { APIEndpoint, APIGroup } from '../../types/api-docs';
 
 interface Props {
   groups: APIGroup[];
-  onTest?: (endpoint: APIEndpoint, params: any) => Promise<any>;
+  onTest?: (endpoint: APIEndpoint, params: unknown) => Promise<any>;
 }
 
 export const APIDocumentation: React.FC<Props> = ({ groups, onTest }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [expandedEndpoint, setExpandedEndpoint] = useState<string | null>(null);
-  const [testParams, setTestParams] = useState<{ [key: string]: any }>({});
+  const [testParams, setTestParams] = useState<{ [key: string]: unknown }>({});
   const [copySnackbar, setCopySnackbar] = useState(false);
 
   const handleCopyCode = (code: string) => {

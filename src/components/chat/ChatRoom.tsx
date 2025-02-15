@@ -1,14 +1,15 @@
 import React from 'react';
 import { Box, Typography, Badge } from '@mui/material';
-import { Chat } from '../../types/chat.types';
-import { User } from '../../types/auth.types';
+import type { ChatRoom as ChatRoomType } from '../../types/chat.types';
+import type { User } from '../../types/auth.types';
 
 interface ChatRoomProps {
-  room: Chat.Room;
+  room: ChatRoomType;
   currentUser: User;
 }
 
-const ChatRoom: React.FC<ChatRoomProps> = ({ room, currentUser }) => {
+// اضافه کردن پیشوند _ به currentUser چون استفاده نشده
+const ChatRoom: React.FC<ChatRoomProps> = ({ room, _currentUser }) => {
   const { name, lastMessage, unreadCount } = room;
 
   return (
@@ -28,7 +29,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ room, currentUser }) => {
         <Typography variant="h6">{name}</Typography>
         <Badge badgeContent={unreadCount} color="primary">
           <Typography variant="body2">
-            New messages: {unreadCount}
+            پیام‌های جدید: {unreadCount}
           </Typography>
         </Badge>
       </Box>
@@ -38,7 +39,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ room, currentUser }) => {
       </Typography>
 
       <Typography variant="caption" color="text.secondary">
-        Status: {lastMessage.status}
+        وضعیت: {lastMessage.status}
       </Typography>
     </Box>
   );

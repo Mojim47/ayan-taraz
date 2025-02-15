@@ -1,8 +1,8 @@
-// src/services/NotificationService.ts
-import { Notification, NotificationTemplate } from '../types/notification';
+import { Notification} from '../types/notification';
 
 export class NotificationService {
   private static readonly API_URL = '/api/notifications';
+
 
   static async getNotifications(userId: string): Promise<Notification[]> {
     try {

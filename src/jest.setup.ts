@@ -45,12 +45,14 @@ expect.extend({
     const pass = Boolean(received);
     if (pass) {
       return {
-        message: () => `expected element not to be in the document`,
-        pass: true,
+        message: () => 'expected element to be in the document',
+        pass: false,
       };
+      
+      
     }
     return {
-      message: () => `expected element to be in the document`,
+      message: () => "expected element to be in the document",
       pass: false,
     };
   },

@@ -17,7 +17,7 @@ export interface Notification {
   read: boolean;
   userId: string;
   link?: string;
-  data?: any;
+  data?: unknown;
 }
 
 export interface NotificationTemplate {

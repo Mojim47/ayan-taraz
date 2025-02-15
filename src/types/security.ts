@@ -21,7 +21,7 @@ export interface SecurityLog {
   ipAddress: string;
   userAgent: string;
   action: string;
-  details: any;
+  details: unknown;
 }
 
 export interface SecurityAlert {

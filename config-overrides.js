@@ -1,5 +1,5 @@
-const { override, addBabelPlugin, addWebpackAlias } = require('customize-cra');
-const path = require('path');
+import { override, addBabelPlugin, addWebpackAlias } from 'customize-cra';
+import path from 'path';
 
 module.exports = override(
   addBabelPlugin(['@babel/plugin-proposal-nullish-coalescing-operator']),

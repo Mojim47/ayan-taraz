@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ErrorService } from '../services/ErrorService';
-import { ErrorLog } from '../types/error';
+// حذف import { ErrorLog } چون استفاده نشده
 
 export const useError = () => {
   const [error, setError] = useState<Error | null>(null);

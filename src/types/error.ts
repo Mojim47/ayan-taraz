@@ -13,7 +13,8 @@ export interface ErrorLog {
     url?: string;
     action?: string;
     component?: string;
-    [key: string]: any;
+    // به جای any از unknown استفاده می‌کنیم که type-safe تر هست
+    [key: string]: unknown;
   };
 }
 

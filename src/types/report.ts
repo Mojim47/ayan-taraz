@@ -3,6 +3,7 @@ export type ChartType = 'bar' | 'line' | 'pie' | 'area';
 export type TimeRange = 'today' | 'week' | 'month' | 'year' | 'custom';
 export type DataType = 'text' | 'number' | 'date' | 'boolean';
 export type FilterOperator = 'eq' | 'gt' | 'lt' | 'contains' | 'between';
+export type DateFormatPattern = 'YYYY-MM-DD' | 'YYYY/MM/DD' | 'HH:mm:ss' | 'YYYY-MM-DD HH:mm:ss';
 
 export interface DateRange {
   start: Date;
@@ -19,7 +20,7 @@ export interface ReportColumn {
   field: string;
   title: string;
   type: DataType;
-  format?: string;
+  formatPattern?: DateFormatPattern;
 }
 
 export interface ChartConfig {
@@ -39,7 +40,7 @@ export interface ReportConfig {
   chart?: ChartConfig;
   timeRange?: TimeRange;
   customRange?: DateRange;
-  refreshInterval?: number; // in seconds
+  refreshInterval?: number;
 }
 
 export interface ReportSummary {
@@ -60,7 +61,6 @@ export interface ReportData<T = Record<string, unknown>> {
   metadata?: ReportMetadata;
 }
 
-// Type guards for type checking
 export const isDateRange = (value: unknown): value is DateRange => {
   return (
     typeof value === 'object' &&
@@ -90,13 +90,11 @@ export const isValidFilterValue = (
   }
 };
 
-// Utility type for creating type-safe report configurations
 export type TypedReportConfig<T> = Omit<ReportConfig, 'columns'> & {
   columns?: Array<ReportColumn & { field: keyof T }>;
 };
 
-// Example usage:
-interface UserReportData {
+export interface UserReportData {
   id: string;
   name: string;
   joinDate: Date;
@@ -104,36 +102,46 @@ interface UserReportData {
   visits: number;
 }
 
-// Type-safe report configuration
 export const createUserReport = (): TypedReportConfig<UserReportData> => ({
   id: 'user-report',
-  title: 'User Activity Report',
+  title: 'گزارش فعالیت کاربران',
   type: 'table',
   dataSource: 'users',
   filters: [],
   columns: [
     { field: 'name', title: 'نام کاربر', type: 'text' },
-    { field: 'joinDate', title: 'تاریخ عضویت', type: 'date', format: 'YYYY-MM-DD' },
+    { field: 'joinDate', title: 'تاریخ عضویت', type: 'date', formatPattern: 'YYYY-MM-DD HH:mm:ss' },
     { field: 'active', title: 'وضعیت', type: 'boolean' },
     { field: 'visits', title: 'تعداد بازدید', type: 'number' }
   ]
 });
 
-// Constants
 export const DEFAULT_PAGE_SIZE = 20;
+
 export const REFRESH_INTERVALS = {
-  FAST: 30, // 30 seconds
-  NORMAL: 300, // 5 minutes
-  SLOW: 3600, // 1 hour
+  FAST: 30,
+  NORMAL: 300,
+  SLOW: 3600,
 } as const;
 
 export const formatters = {
-  date: (value: Date, format = 'YYYY-MM-DD'): string => {
-    return new Intl.DateTimeFormat('fa-IR', {
+  date: (value: Date, pattern: DateFormatPattern = 'YYYY-MM-DD'): string => {
+    const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
-    }).format(value);
+    };
+
+    if (pattern.includes('HH:mm:ss')) {
+      Object.assign(options, {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+    }
+
+    return new Intl.DateTimeFormat('fa-IR', options).format(value);
   },
   number: (value: number): string => {
     return new Intl.NumberFormat('fa-IR').format(value);

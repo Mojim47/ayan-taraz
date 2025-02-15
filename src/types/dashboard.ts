@@ -20,7 +20,7 @@ export interface Activity {
   user: string;
   action: string;
   timestamp: Date;
-  details?: any;
+  details?: unknown;
 }
 
 export interface Alert {
