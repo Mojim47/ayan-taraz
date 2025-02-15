@@ -1,4 +1,3 @@
-// src/services/ErrorService.ts
 import { ErrorLog } from '../types/error';
 
 export class ErrorService {
@@ -19,13 +18,14 @@ export class ErrorService {
             timestamp: new Date().toISOString(),
           }),
         });
-        break;
+        break; 
       } catch (e) {
         attempts++;
         if (attempts === this.MAX_RETRY_ATTEMPTS) {
-          // ذخیره در localStorage برای ارسال بعدی
+          
           this.storeErrorLocally(error);
         }
+        // Wait before retrying
         await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
       }
     }
@@ -35,7 +35,7 @@ export class ErrorService {
     const storedErrors = JSON.parse(
       localStorage.getItem('pendingErrors') || '[]'
     );
-    storedErrors.push(error);
+    storedErrors.push({ ...error, timestamp: new Date().toISOString() }); // Add timestamp to stored error
     localStorage.setItem('pendingErrors', JSON.stringify(storedErrors));
   }
 
@@ -46,20 +46,21 @@ export class ErrorService {
     if (storedErrors.length === 0) return;
 
     const successfulSyncs: number[] = [];
-
     for (let i = 0; i < storedErrors.length; i++) {
       try {
         await this.logError(storedErrors[i]);
-        successfulSyncs.push(i);
+        successfulSyncs.push(i); // Keep track of successfully synced errors
       } catch (e) {
         console.error('Error syncing stored error:', e);
       }
     }
 
-    // حذف خطاهای موفق از localStorage
+   
     const remainingErrors = storedErrors.filter(
-      (_, index) => !successfulSyncs.includes(index)
+      (index,_) => !successfulSyncs.includes(index)
     );
+    
+
     localStorage.setItem('pendingErrors', JSON.stringify(remainingErrors));
   }
 

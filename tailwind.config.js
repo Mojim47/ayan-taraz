@@ -1,12 +1,17 @@
-export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./pages/**/*.{js,jsx,ts,tsx}",
+    "./components/**/*.{js,jsx,ts,tsx}",
+  ],
   theme: {
     extend: {
       colors: {
-        primary: '#000000',
-        accent: '#FFD700',
+        primary: 'var(--primary-color)',
+        accent: 'var(--accent-color)',
       },
     },
   },
   plugins: [],
-};
+}

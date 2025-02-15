@@ -1,15 +1,5 @@
 import '@testing-library/jest-dom';
 import { vi, expect } from 'vitest';
-import type { Assertion, AsymmetricMatchersContaining } from 'vitest';
-
-interface CustomMatchers<R = unknown> {
-  toBeInTheDocument(): R;
-}
-
-declare module 'vitest' {
-  interface Assertion<T = any> extends CustomMatchers<T> {}
-  interface AsymmetricMatchersContaining extends CustomMatchers {}
-}
 
 // Global test setup
 beforeAll(() => {
@@ -29,8 +19,8 @@ beforeAll(() => {
   });
 
   // Setup global test environment
-  if (typeof global.jest === 'undefined') {
-    global.jest = vi;
+  if (typeof globalThis.jest === 'undefined') {
+    (globalThis as any).jest = vi;
   }
 });
 
@@ -41,22 +31,12 @@ afterAll(() => {
 
 // Custom matchers
 expect.extend({
-  toBeInTheDocument(received: unknown) {
+  toBeInTheDocument(received) {
     const pass = Boolean(received);
-    if (pass) {
-      return {
-        message: () => 'expected element to be in the document',
-        pass: false,
-      };
-      
-      
-    }
     return {
-      message: () => "expected element to be in the document",
-      pass: false,
+      message: () =>
+        `expected ${received} ${pass ? 'not ' : ''}to be in the document`,
+      pass,
     };
   },
 });
-
-// Re-export for use in tests
-export { expect, vi };

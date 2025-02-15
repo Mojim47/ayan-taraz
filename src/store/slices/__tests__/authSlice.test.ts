@@ -23,7 +23,10 @@ describe('authSlice', () => {
   });
 
   it('should handle logout', () => {
-    const actual = authReducer(initialState, logout());
+    const actual = authReducer(
+      { isAuthenticated: true, user: { id: 1, name: 'Test User' }, token: 'token' }, 
+      logout()
+    );
     expect(actual).toEqual(initialState);
   });
 });

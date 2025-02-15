@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Typography, TypographyVariant, Box, SxProps, Theme } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { format, formatDistance } from 'date-fns';
-import { fa } from 'date-fns/locale'; // import صحیح برای زبان فارسی
+import { faIR } from 'date-fns/locale';
 
 interface DateTimeProps {
   date: Date;
@@ -42,9 +42,9 @@ export const DateTime = ({
     }
   }, [showTimeAgo, updateInterval]);
 
-  const formattedDate = toPersianNumber(format(date, dateFormat, { locale: fa }));
+  const formattedDate = toPersianNumber(format(date, dateFormat, { locale: faIR }));
   const timeAgo = showTimeAgo
-    ? formatDistance(date, new Date(), { addSuffix: true, locale: fa })
+    ? formatDistance(date, new Date(), { addSuffix: true, locale: faIR })
     : null;
 
   return (

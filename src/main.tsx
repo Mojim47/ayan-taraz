@@ -7,6 +7,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { store } from './store';
 import theme from './theme';
 import App from './App';
+import './index.css';
 
 const router = createBrowserRouter(
   [
@@ -14,13 +15,7 @@ const router = createBrowserRouter(
       path: '/*',
       element: <App />
     }
-  ],
-  {
-    future: {
-      v7_startTransition: true,
-      v7_relativeSplatPath: true
-    }
-  }
+  ]
 );
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

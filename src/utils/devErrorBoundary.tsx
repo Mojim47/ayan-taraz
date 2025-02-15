@@ -28,8 +28,8 @@ export class DevErrorBoundary extends Component<Props, State> {
       errorInfo,
     });
 
-    // در محیط توسعه می‌توانیم خطاها را لاگ کنیم
-    if (process.env.REACT_APP_ENV === 'development') {
+    // Log errors in development environment
+    if (process.env.NODE_ENV === 'development') {
       console.error('Error:', error);
       console.error('Error Info:', errorInfo);
     }
@@ -38,23 +38,65 @@ export class DevErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <Paper sx={{ p: 3, m: 2 }}>
-          <Typography variant="h5" color="error">
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            p: 3, 
+            m: 2, 
+            bgcolor: 'grey.100',
+            border: '1px solid',
+            borderColor: 'warning.main'
+          }}
+        >
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              color: 'warning.main',
+              fontWeight: 'medium'
+            }}
+          >
             خطای توسعه
           </Typography>
           <Box sx={{ mt: 2 }}>
-            <Typography variant="body1">{this.state.error?.message}</Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: 'text.primary',
+                fontFamily: 'monospace'
+              }}
+            >
+              {this.state.error?.message}
+            </Typography>
             {this.state.errorInfo && (
-              <pre style={{ overflow: 'auto', maxHeight: '300px' }}>
+              <Box
+                component="pre"
+                sx={{
+                  overflow: 'auto',
+                  maxHeight: '300px',
+                  p: 2,
+                  mt: 2,
+                  bgcolor: 'grey.50',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'grey.300',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem'
+                }}
+              >
                 {this.state.errorInfo.componentStack}
-              </pre>
+              </Box>
             )}
           </Box>
           <Button
             variant="contained"
-            color="primary"
+            color="warning"
             onClick={() => window.location.reload()}
-            sx={{ mt: 2 }}
+            sx={{ 
+              mt: 2,
+              '&:hover': {
+                bgcolor: 'warning.dark'
+              }
+            }}
           >
             بارگذاری مجدد
           </Button>
