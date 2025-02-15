@@ -1,66 +1,72 @@
-import React from 'react';
-import { TextField, Button, Box } from '@mui/material';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
+import { Box, TextField, Button } from '@mui/material';
+import { FormEvent, useState } from 'react';
 
 interface LoginFormProps {
-  onSubmit: (values: { username: string; password: string }) => void;
+  onSubmit: (username: string, password: string) => void;
 }
 
-const validationSchema = yup.object({
-  username: yup.string().required('نام کاربری الزامی است'),
-  password: yup.string().required('رمز عبور الزامی است'),
-});
+export const LoginForm = ({ onSubmit }: LoginFormProps) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
-  const formik = useFormik({
-    initialValues: {
-      username: '',
-      password: '',
-    },
-    validationSchema,
-    onSubmit: (values) => {
-      onSubmit(values);
-    },
-  });
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onSubmit(username, password);
+  };
 
   return (
-    <Box component="form" onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      data-testid="login-form"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        p: 3,
+        bgcolor: 'background.paper',
+        borderRadius: 1,
+        boxShadow: 1,
+        border: 1,
+        borderColor: 'primary.dark',
+      }}
+    >
       <TextField
-        fullWidth
         id="username"
         name="username"
         label="نام کاربری"
-        value={formik.values.username}
-        onChange={formik.handleChange}
-        error={formik.touched.username && Boolean(formik.errors.username)}
-        helperText={formik.touched.username && formik.errors.username}
+        variant="outlined"
+        fullWidth
         margin="normal"
-        aria-label="username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        inputProps={{
+          'aria-label': 'نام کاربری',
+        }}
       />
       <TextField
-        fullWidth
         id="password"
         name="password"
         label="رمز عبور"
         type="password"
-        value={formik.values.password}
-        onChange={formik.handleChange}
-        error={formik.touched.password && Boolean(formik.errors.password)}
-        helperText={formik.touched.password && formik.errors.password}
+        variant="outlined"
+        fullWidth
         margin="normal"
-        aria-label="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        inputProps={{
+          'aria-label': 'رمز عبور',
+        }}
       />
       <Button
         type="submit"
         fullWidth
         variant="contained"
-        sx={{ mt: 3, mb: 2 }}
+        color="primary"
+        sx={{ mt: 2 }}
       >
         ورود
       </Button>
     </Box>
   );
 };
-
-export default LoginForm;

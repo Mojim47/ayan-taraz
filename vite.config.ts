@@ -11,15 +11,22 @@ export default defineConfig({
       jsxImportSource: '@emotion/react',
       jsxRuntime: 'automatic',
       babel: {
-        plugins: [
-          '@babel/plugin-transform-runtime',
-          '@emotion/babel-plugin' // اضافه کردن پشتیبانی از Emotion
-        ],
+        plugins: ['@babel/plugin-transform-runtime', '@emotion/babel-plugin'],
         babelrc: false,
-        configFile: false
+        configFile: false,
       },
     }),
   ],
+  define: {
+    'process.env.NODE_ENV': '"development"',
+    'process.env.VITE_CURRENT_TIME': '"2025-02-15 10:04:22"',
+    'process.env.VITE_USER_LOGIN': '"Mojim47"',
+    // فعال‌سازی فیچرهای React Router v7
+    'process.env.VITE_ROUTER_FUTURE_FLAGS': JSON.stringify({
+      v7_startTransition: true,
+      v7_relativeSplatPath: true
+    })
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -30,46 +37,13 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.tsx'],
     coverage: {
+      provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
         'src/setupTests.tsx',
         '**/*.d.ts',
-        '**/*.test.{ts,tsx}',
         '**/__mocks__/**'
-      ],
-      provider: 'v8'
-    },
-    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: ['node_modules', 'dist', '.idea', '.git', '.cache'],
-    testTimeout: 10000,
-    mockReset: true,
-    restoreMocks: true,
-    clearMocks: true,
-    reporters: ['default', 'html'],
-    pool: 'vmThreads',
-    poolOptions: {
-      threads: {
-        singleThread: true
-      }
-    },
-    environmentOptions: {
-      jsdom: {
-        url: 'http://localhost:3000'
-      }
-    }
-  },
-  define: {
-    'process.env.NODE_ENV': '"test"',
-    'process.env.VITE_CURRENT_TIME': '"2025-02-15 08:14:06"', // زمان فعلی
-    'process.env.VITE_USER_LOGIN': '"Mojim47"' // نام کاربری فعلی
-  },
-  build: {
-    sourcemap: true,
-    rollupOptions: {
-      external: [
-        'react/jsx-runtime',
-        '@emotion/react/jsx-runtime'
       ]
     }
   }

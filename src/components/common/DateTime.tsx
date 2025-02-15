@@ -1,55 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { Typography, Box, Tooltip } from '@mui/material';
-import { Schedule } from '@mui/icons-material';
+import { useState, useEffect } from 'react';
+import { Typography, TypographyVariant, Box, SxProps, Theme } from '@mui/material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { format, formatDistance } from 'date-fns';
-import { fa } from 'date-fns/locale'; // تغییر نحوه import
+import { fa } from 'date-fns/locale'; // import صحیح برای زبان فارسی
 
 interface DateTimeProps {
   date: Date;
   format?: string;
   showIcon?: boolean;
   showTimeAgo?: boolean;
-  variant?: 'h6' | 'body1' | 'body2';
-  color?: 'primary' | 'secondary' | 'textPrimary' | 'textSecondary' | 'action';
+  variant?: TypographyVariant;
+  sx?: SxProps<Theme>;
   updateInterval?: number;
 }
 
-export const DateTime: React.FC<DateTimeProps> = ({
+const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+// تابع تبدیل اعداد انگلیسی به فارسی
+const toPersianNumber = (str: string): string => {
+  return str.replace(/\d/g, (d) => persianDigits[parseInt(d)]);
+};
+
+export const DateTime = ({
   date,
-  format: dateFormat = 'yyyy-MM-dd HH:mm:ss',
-  showIcon = true,
-  showTimeAgo = true,
+  format: dateFormat = 'yyyy/MM/dd',
+  showIcon = false,
+  showTimeAgo = false,
   variant = 'body1',
-  color = 'textPrimary',
-  updateInterval = 60000,
-}) => {
+  sx,
+  updateInterval = 60000
+}: DateTimeProps) => {
   const [, setUpdate] = useState(0);
 
   useEffect(() => {
-    if (!showTimeAgo) return;
-    const timer = setInterval(() => {
-      setUpdate(prev => prev + 1);
-    }, updateInterval);
-    return () => clearInterval(timer);
+    if (showTimeAgo && updateInterval > 0) {
+      const timer = setInterval(() => {
+        setUpdate(prev => prev + 1);
+      }, updateInterval);
+
+      return () => clearInterval(timer);
+    }
   }, [showTimeAgo, updateInterval]);
 
-  const formattedDate = format(date, dateFormat, { locale: fa });
+  const formattedDate = toPersianNumber(format(date, dateFormat, { locale: fa }));
   const timeAgo = showTimeAgo
-    ? formatDistance(date, new Date('2025-02-13T18:43:22.000Z'), { addSuffix: true, locale: fa })
-    : '';
+    ? formatDistance(date, new Date(), { addSuffix: true, locale: fa })
+    : null;
 
-  const iconColor = color === 'textSecondary' ? 'action' : color;
-  
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      {showIcon && <Schedule fontSize="small" color={iconColor as 'primary' | 'secondary' | 'action'} />}
-      <Tooltip title={timeAgo}>
-        <Typography variant={variant} color={color} component="span">
-          {formattedDate}
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ...sx }}>
+      {showIcon && <AccessTimeIcon color="inherit" fontSize="small" />}
+      <Typography variant={variant} component="span">
+        {formattedDate}
+      </Typography>
+      {timeAgo && (
+        <Typography variant={variant} component="span" sx={{ opacity: 0.8 }}>
+          ({timeAgo})
         </Typography>
-      </Tooltip>
+      )}
     </Box>
   );
 };
-
-export default DateTime;
